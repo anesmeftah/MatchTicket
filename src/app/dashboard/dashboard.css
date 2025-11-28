@@ -1,0 +1,105 @@
+/* Dashboard Layout */
+:host {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: 70px 1fr;
+  grid-template-areas:
+    "sidebar topbar"
+    "sidebar content";
+  min-height: 100vh;
+  background-color: #EFECE3;
+}
+
+app-sidebar {
+  grid-area: sidebar;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: #4A70A9;
+  z-index: 100;
+}
+
+app-topbar {
+  grid-area: topbar;
+  position: fixed;
+  top: 0;
+  left: 250px;
+  right: 0;
+  height: 70px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 90;
+}
+
+.content {
+  grid-area: content;
+  margin-left: 250px;
+  margin-top: 70px;
+  padding: 32px;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Statistics Cards Section */
+app-statistics-cards {
+  display: block;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+/* Tickets Table Section */
+app-tickets-table {
+  display: block;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  max-width: 800px;
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  :host {
+    grid-template-columns: 1fr;
+    grid-template-rows: 70px 1fr;
+    grid-template-areas:
+      "topbar"
+      "content";
+  }
+
+  app-sidebar {
+    width: 250px;
+    transform: translateX(-250px);
+    transition: transform 0.3s ease;
+  }
+
+  app-sidebar.open {
+    transform: translateX(0);
+  }
+
+  app-topbar {
+    left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 16px 12px;
+  }
+
+  app-tickets-table {
+    padding: 16px;
+    border-radius: 8px;
+  }
+}

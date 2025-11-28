@@ -1,0 +1,100 @@
+/* Tickets Table Container */
+:host {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+}
+
+h2 {
+  color: #000000;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+thead {
+  background-color: #4A70A9;
+}
+
+thead th {
+  color: #ffffff;
+  font-weight: 600;
+  text-align: left;
+  padding: 16px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #EFECE3;
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: #EFECE3;
+}
+
+tbody tr:last-child {
+  border-bottom: none;
+}
+
+tbody td {
+  padding: 16px;
+  color: #000000;
+  font-size: 14px;
+}
+
+/* Status Badges */
+.status-sold {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #8FABD4;
+  color: #ffffff;
+}
+
+.status-pending {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #EFECE3;
+  color: #000000;
+}
+
+.status-cancelled {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  table {
+    font-size: 12px;
+  }
+
+  thead th,
+  tbody td {
+    padding: 12px 8px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}

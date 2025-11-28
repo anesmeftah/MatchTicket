@@ -1,0 +1,29 @@
+<h2>Last sold tickets</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Seat</th>
+            <th>Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (ticket of tickets(); track ticket.id) {
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.event }}</td>
+                <td>{{ ticket.date }}</td>
+                <td>{{ ticket.seat }}</td>
+                <td>${{ ticket.price }}</td>
+                <td>
+                    <span [class]="'status-' + ticket.status">
+                        {{ ticket.status }}
+                    </span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
