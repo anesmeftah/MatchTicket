@@ -48,4 +48,10 @@ export class TopbarComponent implements OnInit {
   async handleSignOut() {
     await this.supabase.signOut();
   }
+
+  refreshData() {
+    window.location.reload();
+  }
+
+  
 }
