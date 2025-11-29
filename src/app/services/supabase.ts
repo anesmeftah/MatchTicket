@@ -5,7 +5,7 @@ import {
   createClient,
   Session,
   SupabaseClient,
-  User,
+  User as AuthUser,
 } from '@supabase/supabase-js'
 import { environment } from '../../environments/environment'
 
@@ -14,6 +14,13 @@ export interface Profile {
   username: string
   website: string
   avatar_url: string
+}
+export interface UserData {
+  id: number;
+  email: string;
+  nom: string;
+  prenom: string;
+  password?: string;
 }
 
 @Injectable({
@@ -26,7 +33,9 @@ export class SupabaseService {
   constructor() {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
   }
-
+    getClient() {
+    return this.supabase;
+  }
   get session() {
     this.supabase.auth.getSession().then(({ data }) => {
       this._session = data.session
@@ -34,7 +43,7 @@ export class SupabaseService {
     return this._session
   }
 
-  profile(user: User) {
+  profile(user: AuthUser) {
     return this.supabase
       .from('profiles')
       .select(`username, website, avatar_url`)
@@ -171,5 +180,37 @@ export class SupabaseService {
     
     const total = data?.reduce((sum, ticket) => sum + (ticket.price || 0), 0) || 0
     return total
+  }
+  // ✅ Récupérer l'utilisateur par ID
+  async getUser(userId: number) {
+    const { data, error } = await this.supabase
+      .from('user')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  // ✅ Mettre à jour l'utilisateur
+  async updateUser1(userData: UserData) {
+    const { data, error } = await this.supabase
+      .from('user')
+      .update({
+        nom: userData.nom,
+        prenom: userData.prenom,
+        email: userData.email
+      })
+      .eq('id', userData.id);
+
+    if (error) throw error;
+    return data;
+  }
+
+  // ✅ Récupérer l'utilisateur authentifié
+  async getCurrentAuthUser() {
+    const { data: { user } } = await this.supabase.auth.getUser();
+    return user;
   }
 }

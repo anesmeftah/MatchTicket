@@ -49,4 +49,7 @@ export class Profile {
     private hasChanges(): boolean {
         return JSON.stringify(this.user) !== JSON.stringify(this.originalUser);
     }
+      getPasswordStars(): string {
+    return '*'.repeat(this.user.password.length);
+  }
 }
