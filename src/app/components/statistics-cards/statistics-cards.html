@@ -1,4 +1,32 @@
 <div class="statistics-container">
+  <!-- Quick Stats Cards -->
+  <div class="quick-stats">
+    <div class="stat-card">
+      <div class="stat-icon">🎫</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ quickStats().ticketsSold }}</div>
+        <div class="stat-label">Tickets Sold</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⚽</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ quickStats().upcomingMatches }}</div>
+        <div class="stat-label">Upcoming Matches</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ quickStats().totalRevenue | currency:'USD':'symbol':'1.0-0' }}</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Histogram -->
   <h2>Tickets Sold Per Match</h2>
   
   <div class="histogram">

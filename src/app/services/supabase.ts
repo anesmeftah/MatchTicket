@@ -128,4 +128,48 @@ export class SupabaseService {
 
     return Array.from(statsMap.values())
   }
+
+  async getTotalTicketsSold(): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('tickets')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'sold')
+    
+    if (error) {
+      console.error('Error fetching total tickets sold:', error)
+      return 0
+    }
+    
+    return count || 0
+  }
+
+  async getUpcomingMatchesCount(): Promise<number> {
+    const today = new Date().toISOString()
+    const { count, error } = await this.supabase
+      .from('matches')
+      .select('*', { count: 'exact', head: true })
+      .gte('date', today)
+    
+    if (error) {
+      console.error('Error fetching upcoming matches count:', error)
+      return 0
+    }
+    
+    return count || 0
+  }
+
+  async getTotalRevenue(): Promise<number> {
+    const { data, error } = await this.supabase
+      .from('tickets')
+      .select('price')
+      .eq('status', 'sold')
+    
+    if (error) {
+      console.error('Error fetching total revenue:', error)
+      return 0
+    }
+    
+    const total = data?.reduce((sum, ticket) => sum + (ticket.price || 0), 0) || 0
+    return total
+  }
 }
