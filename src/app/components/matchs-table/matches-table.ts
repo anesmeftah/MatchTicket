@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { MatchService } from '../../services/match';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { SupabaseService } from '../../services/supabase';
+import { Match } from '../../models/match.model';
 
 @Component({
   selector: 'app-matchs-table',
@@ -7,8 +8,19 @@ import { MatchService } from '../../services/match';
   templateUrl: './matchs-table.html',
   styleUrl: './matchs-table.css',
 })
-export class MatchesTable {
-  private matchService = inject(MatchService);
+export class MatchesTable implements OnInit {
+  private matchService = inject(SupabaseService);
+  protected readonly matches = signal<Match[]>([]);
 
-  protected readonly matchs = this.matchService.matches;
+  async ngOnInit() {
+    const data = await this.matchService.getMatches();
+    const mappedData: Match[] = data.map((match: any) => ({
+      id: match.id,
+      homeTeam: match.home_team,
+      awayTeam: match.away_team,
+      date: match.date,
+      venue: match.stadiums?.name || ''
+    }));
+    this.matches.set(mappedData);
+  }
 }

@@ -1,23 +1,25 @@
 <h2>Incoming matches</h2>
+
 <table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Home Team</th>
-            <th>Away Team</th>
-            <th>Date</th>
-            <th>Venue</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (match of matchs(); track match.id) {
-            <tr>
-                <td>{{ match.id }}</td>
-                <td>{{ match.homeTeam }}</td>
-                <td>{{ match.awayTeam }}</td>
-                <td>{{ match.date }}</td>
-                <td>{{ match.venue }}</td>
-            </tr>
-        }
-    </tbody>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Home Team</th>
+      <th>Away Team</th>
+      <th>Date</th>
+      <th>Venue</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    @for (match of matches(); track match.id) {
+      <tr>
+        <td>{{ match.id }}</td>
+        <td>{{ match.homeTeam }}</td>
+        <td>{{ match.awayTeam }}</td>
+        <td>{{ match.date }}</td>
+        <td>{{ match.venue }}</td>
+      </tr>
+    }
+  </tbody>
 </table>

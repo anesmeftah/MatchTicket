@@ -1,1 +1,28 @@
-<p>statistics-cards works!</p>
+<div class="statistics-container">
+  <h2>Tickets Sold Per Match</h2>
+  
+  <div class="histogram">
+    @if (matchStats().length > 0) {
+      <div class="chart">
+        @for (stat of matchStats(); track stat.matchName) {
+          <div class="bar-container">
+            <div class="bar-wrapper">
+              <div 
+                class="bar" 
+                [style.height.%]="getBarHeight(stat.count)"
+                [title]="stat.count + ' tickets sold'"
+              >
+                <span class="count">{{ stat.count }}</span>
+              </div>
+            </div>
+            <div class="label">{{ stat.matchName }}</div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-data">
+        <p>No ticket sales data available</p>
+      </div>
+    }
+  </div>
+</div>
