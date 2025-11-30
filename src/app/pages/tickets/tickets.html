@@ -2,5 +2,49 @@
 <app-topbar></app-topbar>
 
 <div class="content">
-  <h1>Tickets Page</h1>
+  <div class="page-header">
+    <h1>Upcoming Matches</h1>
+    <p class="subtitle">Book your tickets for the upcoming matches</p>
+  </div>
+
+  <div class="matches-container">
+    @if (upcomingMatches().length === 0) {
+      <div class="no-matches">
+        <p>No upcoming matches available at the moment.</p>
+      </div>
+    } @else {
+      <div class="matches-list">
+        @for (match of upcomingMatches(); track match.id) {
+          <div class="match-card">
+            <div class="match-header">
+              <span class="match-date">{{ match.date | date: 'fullDate' }}</span>
+            </div>
+            <div class="match-details">
+              <div class="team home-team">
+                <h3>{{ match.homeTeam }}</h3>
+                <span class="team-label">Home</span>
+              </div>
+              <div class="match-vs">
+                <span>VS</span>
+              </div>
+              <div class="team away-team">
+                <h3>{{ match.awayTeam }}</h3>
+                <span class="team-label">Away</span>
+              </div>
+            </div>
+            <div class="match-footer">
+              <div class="venue-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>{{ match.venue }}</span>
+              </div>
+              <button class="book-ticket-btn">Manage Tickets</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
 </div>

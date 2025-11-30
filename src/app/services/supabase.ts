@@ -84,7 +84,7 @@ export class SupabaseService {
     const { data, error } = await this.supabase
       .from('matches')
       .select(`id , home_team , away_team , date , stadiums(name)`)
-      .limit(7)
+      .order('date', { ascending: true })
     
     if (error) {
       console.error('Error fetching matches:', error)
