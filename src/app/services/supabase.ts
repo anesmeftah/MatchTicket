@@ -181,23 +181,17 @@ export class SupabaseService {
     const total = data?.reduce((sum, ticket) => sum + (ticket.price || 0), 0) || 0
     return total
   }
-  // ✅ Récupérer l'utilisateur par ID
   async getUser(userId: number) {
     const { data, error } = await this.supabase
       .from('user')
-      .select('*')
-      .eq('id', userId)
-      .single();
+          .select('*').eq('id', userId).single();
 
     if (error) throw error;
     return data;
   }
-
-  // ✅ Mettre à jour l'utilisateur
   async updateUser1(userData: UserData) {
     const { data, error } = await this.supabase
-      .from('user')
-      .update({
+      .from('user')   .update({
         nom: userData.nom,
         prenom: userData.prenom,
         email: userData.email
@@ -207,8 +201,6 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
-
-  // ✅ Récupérer l'utilisateur authentifié
   async getCurrentAuthUser() {
     const { data: { user } } = await this.supabase.auth.getUser();
     return user;

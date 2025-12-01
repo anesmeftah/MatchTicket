@@ -27,12 +27,11 @@ async getCurrentUser(): Promise<User> {
       const authUser = await this.supabase.getCurrentAuthUser();
       
       if (authUser) {
-        // Ici vous devez déterminer l'ID number depuis l'email ou autre identifiant
         const userData = await this.findUserByEmail(authUser.email);
         
         if (userData) {
           return {
-            id: userData.id, // ← number depuis Supabase
+            id: userData.id,
             email: userData.email,
             nom: userData.nom || '',
             prenom: userData.prenom || '',
@@ -47,14 +46,11 @@ async getCurrentUser(): Promise<User> {
       return this.getFallbackUser();
     }
   }
-
-  // Nouvelle méthode pour trouver l'user par email
   private async findUserByEmail(email: string | undefined) {
     if (!email) return null;
     
     const { data, error } = await this.supabase.getClient()
-      .from('user')
-      .select('*')
+      .from('user').select('*')
       .eq('email', email)
       .single();
 
@@ -68,7 +64,7 @@ async getCurrentUser(): Promise<User> {
   async updateUser1(user1: User): Promise<boolean> {
     try {
       await this.supabase.updateUser1({
-        id: user1.id, // ← number
+        id: user1.id,
         email: user1.email,
         nom: user1.nom,
         prenom: user1.prenom
@@ -82,7 +78,7 @@ async getCurrentUser(): Promise<User> {
 
   private getFallbackUser(): User {
     return {
-      id: 1, // ← number
+      id: 1,
       email: 'maindf@gmail.com',
       nom: 'Nom',
       prenom: 'Prénom',
