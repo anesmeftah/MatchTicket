@@ -94,6 +94,81 @@ export class SupabaseService {
     return data || []
   }
 
+  async getStadiums() {
+    const { data, error } = await this.supabase
+      .from('stadiums')
+      .select('id, name')
+    
+    if (error) {
+      console.error('Error fetching stadiums:', error)
+      return []
+    }
+    return data || []
+  }
+
+  async addStadium(name: string) {
+    // First try to find existing stadium
+    const { data: existing } = await this.supabase
+      .from('stadiums')
+      .select('id, name')
+      .eq('name', name)
+      .single()
+    
+    if (existing) {
+      return existing
+    }
+
+    const { data, error } = await this.supabase
+      .from('stadiums')
+      .insert({ 
+        name,
+        city: 'Unknown',
+        country: 'Unknown',
+        capacity: 0
+      })
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('Error adding stadium:', error)
+      // If insert failed, try one last time to fetch (race condition)
+      const { data: retry } = await this.supabase
+        .from('stadiums')
+        .select('id, name')
+        .eq('name', name)
+        .single()
+      return retry || null
+    }
+    return data
+  }
+
+  async insertMatch(match: any) {
+    // Check if match exists to avoid duplicates
+    const { data: existing } = await this.supabase
+      .from('matches')
+      .select('id')
+      .eq('home_team', match.home_team)
+      .eq('away_team', match.away_team)
+      .eq('date', match.date)
+      .single()
+
+    if (existing) {
+      return existing
+    }
+
+    const { data, error } = await this.supabase
+      .from('matches')
+      .insert(match)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error inserting match:', error)
+      return null
+    }
+    return data
+  }
+
 
   async getSoldTickets(){
     const {data , error} = await this.supabase
@@ -204,5 +279,19 @@ export class SupabaseService {
   async getCurrentAuthUser() {
     const { data: { user } } = await this.supabase.auth.getUser();
     return user;
+  }
+
+  async addTickets(tickets: any[]) {
+    const { data, error } = await this.supabase
+      .from('tickets')
+      .insert(tickets)
+      .select()
+    
+    if (error) {
+      console.error('Error adding tickets:', error)
+      throw error
+    }
+    
+    return data
   }
 }

@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { SupabaseService } from '../../services/supabase';
+import { MatchService } from '../../services/match';
 import { CommonModule } from '@angular/common';
 import { QuickStats } from '../../models/quickStats.model';
 
@@ -18,6 +19,7 @@ interface MatchStats {
 })
 export class StatisticsCards implements OnInit {
   private supabaseService = inject(SupabaseService);
+  private matchService = inject(MatchService);
   protected readonly matchStats = signal<MatchStats[]>([]);
   protected readonly maxCount = signal<number>(0);
   protected readonly quickStats = signal<QuickStats>({
@@ -25,6 +27,13 @@ export class StatisticsCards implements OnInit {
     upcomingMatches: 0,
     totalRevenue: 0
   });
+
+  constructor() {
+    effect(() => {
+      const count = this.matchService.matches().length;
+      this.quickStats.update(stats => ({ ...stats, upcomingMatches: count }));
+    });
+  }
 
   async ngOnInit() {
     await this.loadQuickStats();
@@ -38,17 +47,16 @@ export class StatisticsCards implements OnInit {
   }
 
   async loadQuickStats() {
-    const [ticketsSold, upcomingMatches, totalRevenue] = await Promise.all([
+    const [ticketsSold, totalRevenue] = await Promise.all([
       this.supabaseService.getTotalTicketsSold(),
-      this.supabaseService.getUpcomingMatchesCount(),
       this.supabaseService.getTotalRevenue()
     ]);
 
-    this.quickStats.set({
+    this.quickStats.update(stats => ({
+      ...stats,
       ticketsSold,
-      upcomingMatches,
       totalRevenue
-    });
+    }));
   }
 
   getBarHeight(count: number): number {

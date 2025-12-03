@@ -1,6 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { SupabaseService } from '../../services/supabase';
-import { Match } from '../../models/match.model';
+import { Component, computed, inject } from '@angular/core';
+import { MatchService } from '../../services/match';
+import { Search } from '../../services/search';
 
 @Component({
   selector: 'app-matchs-table',
@@ -8,19 +8,20 @@ import { Match } from '../../models/match.model';
   templateUrl: './matchs-table.html',
   styleUrl: './matchs-table.css',
 })
-export class MatchesTable implements OnInit {
-  private matchService = inject(SupabaseService);
-  protected readonly matches = signal<Match[]>([]);
+export class MatchesTable {
+  private matchService = inject(MatchService);
+  private searchService = inject(Search);
 
-  async ngOnInit() {
-    const data = await this.matchService.getMatches();
-    const mappedData: Match[] = data.map((match: any) => ({
-      id: match.id,
-      homeTeam: match.home_team,
-      awayTeam: match.away_team,
-      date: match.date,
-      venue: match.stadiums?.name || ''
-    }));
-    this.matches.set(mappedData);
-  }
+  protected readonly matches = computed(() => {
+    const term = this.searchService.searchTerm().toLowerCase();
+    const allMatches = this.matchService.matches();
+
+    if (!term) return allMatches;
+
+    return allMatches.filter(match =>
+      match.homeTeam.toLowerCase().includes(term) ||
+      match.awayTeam.toLowerCase().includes(term) ||
+      match.venue.toLowerCase().includes(term)
+    );
+  });
 }
