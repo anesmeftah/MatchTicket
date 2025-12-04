@@ -9,6 +9,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/profile/profile')
       .then(c => c.Profile) 
   },
+   {
+    path: 'subscription', 
+    loadComponent: () => import('./components/subscription.component/subscription.component')
+      .then(c => c.SubscriptionComponent) 
+  },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
 
     { path: 'dashboard/tickets', loadComponent: () => import('./pages/tickets/tickets').then(m => m.Tickets) },
