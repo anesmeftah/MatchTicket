@@ -15,6 +15,10 @@ export class MatchService {
   private platformId = inject(PLATFORM_ID);
   private matchesSignal = signal<Match[]>([]);
 
+  // Competition codes to fetch matches from
+  // Free tier includes: PL, BL1, SA, PD, FL1, ELC, PPL, DED, BSA, CL, EC, WC
+  private readonly COMPETITIONS = ['PL', 'BL1', 'SA', 'PD', 'FL1', 'CL'];
+
   readonly matches = this.matchesSignal.asReadonly();
 
   constructor() {
@@ -50,63 +54,67 @@ export class MatchService {
     future.setMonth(future.getMonth() + 6);
     const cutoffDate = future.getTime();
 
-    try {
-      // Fetch all scheduled matches (API limit might apply, but we filter client-side to be safe)
-      const response = await firstValueFrom(
-        this.http.get<any>(`${environment.footballDataApiUrl}/matches?status=SCHEDULED`, { headers })
-      );
+    const stadiums = await this.supabase.getStadiums();
+    let totalInsertedCount = 0;
 
-      console.log(`Fetched ${response.matches.length} matches from API`);
+    // Fetch matches from each competition
+    for (const competitionCode of this.COMPETITIONS) {
+      try {
+        const response = await firstValueFrom(
+          this.http.get<any>(`${environment.footballDataApiUrl}/competitions/${competitionCode}/matches?status=SCHEDULED`, { headers })
+        );
 
-      const stadiums = await this.supabase.getStadiums();
-      let insertedCount = 0;
-      
-      for (const m of response.matches) {
-        const matchDate = new Date(m.utcDate);
-        
-        // Filter: Skip if match is more than 6 months in the future
-        if (matchDate.getTime() > cutoffDate) {
-          continue;
-        }
+        console.log(`Fetched ${response.matches?.length || 0} matches from ${competitionCode}`);
 
-        // Use API venue or fallback to Home Team's stadium to avoid "Unknown Venue"
-        const venueName = m.venue || `${m.homeTeam.name} Stadium`;
-        
-        let stadiumId = stadiums.find((s: any) => s.name === venueName)?.id;
+        if (!response.matches) continue;
 
-        if (!stadiumId) {
-          const newStadium = await this.supabase.addStadium(venueName);
-          if (newStadium) {
-            stadiumId = newStadium.id;
-            stadiums.push(newStadium);
-          } else {
-            console.error(`Failed to resolve stadium: ${venueName}`);
-            continue; // Skip this match if stadium cannot be resolved
+        for (const m of response.matches) {
+          const matchDate = new Date(m.utcDate);
+          
+          // Filter: Skip if match is more than 6 months in the future
+          if (matchDate.getTime() > cutoffDate) {
+            continue;
+          }
+
+          // Use API venue or fallback to Home Team's stadium to avoid "Unknown Venue"
+          const venueName = m.venue || `${m.homeTeam.name} Stadium`;
+          
+          let stadiumId = stadiums.find((s: any) => s.name === venueName)?.id;
+
+          if (!stadiumId) {
+            const newStadium = await this.supabase.addStadium(venueName);
+            if (newStadium) {
+              stadiumId = newStadium.id;
+              stadiums.push(newStadium);
+            } else {
+              console.error(`Failed to resolve stadium: ${venueName}`);
+              continue; // Skip this match if stadium cannot be resolved
+            }
+          }
+
+          // Format date and time
+          const dateStr = matchDate.toISOString().split('T')[0]; // YYYY-MM-DD
+          const timeStr = matchDate.toTimeString().split(' ')[0]; // HH:MM:SS
+
+          const matchToInsert = {
+            home_team: m.homeTeam.name,
+            away_team: m.awayTeam.name,
+            date: dateStr,
+            time: timeStr,
+            stadium_id: stadiumId,
+            competition: response.competition?.name || competitionCode
+          };
+
+          const result = await this.supabase.insertMatch(matchToInsert);
+          if (result) {
+            totalInsertedCount++;
           }
         }
-
-        // Format date and time
-        const dateStr = matchDate.toISOString().split('T')[0]; // YYYY-MM-DD
-        const timeStr = matchDate.toTimeString().split(' ')[0]; // HH:MM:SS
-
-        const matchToInsert = {
-          home_team: m.homeTeam.name,
-          away_team: m.awayTeam.name,
-          date: dateStr,
-          time: timeStr,
-          stadium_id: stadiumId
-        };
-
-        const result = await this.supabase.insertMatch(matchToInsert);
-        if (result) {
-          insertedCount++;
-        } else {
-          console.error('Failed to insert match:', matchToInsert);
-        }
+      } catch (err) {
+        console.error(`Failed to sync matches for competition ${competitionCode}`, err);
       }
-      console.log(`Synced ${insertedCount} matches within the next 6 months.`);
-    } catch (err) {
-      console.error('Failed to sync matches', err);
     }
+    
+    console.log(`Synced ${totalInsertedCount} total matches from ${this.COMPETITIONS.length} competitions.`);
   }
 }
