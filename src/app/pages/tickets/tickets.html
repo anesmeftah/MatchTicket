@@ -40,11 +40,63 @@
                 </svg>
                 <span>{{ match.venue }}</span>
               </div>
-              <button class="book-ticket-btn">Manage Tickets</button>
+              <button class="book-ticket-btn" (click)="openBookingModal(match)">Add Tickets</button>
             </div>
           </div>
         }
       </div>
     }
   </div>
+
+  @if (selectedMatch()) {
+    <div class="modal-overlay" (click)="closeBookingModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Add Tickets for Sale</h2>
+          <button class="close-btn" (click)="closeBookingModal()">×</button>
+        </div>
+        
+        <div class="match-summary">
+          <p class="teams">{{ selectedMatch()?.homeTeam }} vs {{ selectedMatch()?.awayTeam }}</p>
+          <p class="date">{{ selectedMatch()?.date | date:'mediumDate' }}</p>
+        </div>
+
+        <div class="booking-form">
+          <div class="form-group">
+            <label>Quantity</label>
+            <div class="quantity-control">
+              <button (click)="ticketQuantity.set(ticketQuantity() > 1 ? ticketQuantity() - 1 : 1)">-</button>
+              <input type="number" [ngModel]="ticketQuantity()" (ngModelChange)="ticketQuantity.set($event)" min="1" max="100">
+              <button (click)="ticketQuantity.set(ticketQuantity() < 100 ? ticketQuantity() + 1 : 100)">+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Price per Ticket ($)</label>
+            <div class="quantity-control" style="width: 100%">
+              <input type="number" [ngModel]="ticketPrice()" (ngModelChange)="ticketPrice.set($event)" min="0" style="width: 100%">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Section / Row</label>
+            <select [ngModel]="selectedSeat()" (ngModelChange)="updatePrice($event)">
+              <option value="A1">Section A - Row 1</option>
+              <option value="A2">Section A - Row 2</option>
+              <option value="B1">Section B - Row 1</option>
+              <option value="B2">Section B - Row 2</option>
+              <option value="VIP">VIP Box</option>
+            </select>
+          </div>
+
+          <div class="total-price">
+            <span>Total Value:</span>
+            <span class="amount">${{ totalValue() }}</span>
+          </div>
+
+          <button class="confirm-btn" (click)="generateTickets()">Generate Tickets</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

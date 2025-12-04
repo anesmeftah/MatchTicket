@@ -1,0 +1,88 @@
+<div class="charts-container">
+  <!-- Pie Chart: Tickets by Status -->
+  <div class="chart-card">
+    <h3>Tickets by Status</h3>
+    <div class="pie-chart-container">
+      @if (ticketsByStatus().length > 0) {
+        <svg class="pie-chart" viewBox="0 0 100 100">
+          @for (item of ticketsByStatus(); track item.label; let i = $index) {
+            <path
+              [attr.d]="getSegmentPath(ticketsByStatus(), i)"
+              [attr.fill]="item.color"
+              class="pie-segment"
+            />
+          }
+          <circle cx="50" cy="50" r="20" fill="white" />
+          <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" class="center-text">
+            {{ totalTickets() }}
+          </text>
+        </svg>
+        <div class="legend">
+          @for (item of ticketsByStatus(); track item.label) {
+            <div class="legend-item">
+              <span class="legend-color" [style.background-color]="item.color"></span>
+              <span class="legend-label">{{ item.label }}</span>
+              <span class="legend-value">{{ item.value }} ({{ getPercentage(ticketsByStatus(), item.value) }})</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-data">No ticket data available</div>
+      }
+    </div>
+  </div>
+
+  <!-- Bar Chart: Revenue by Month -->
+  <div class="chart-card">
+    <h3>Monthly Revenue</h3>
+    <div class="bar-chart-container">
+      @if (revenueByMonth().length > 0) {
+        <div class="bar-chart">
+          @for (item of revenueByMonth(); track item.label) {
+            <div class="bar-item">
+              <div class="bar-wrapper">
+                <div 
+                  class="bar" 
+                  [style.height.%]="getBarHeight(item.value, getMaxValue(revenueByMonth()))"
+                  [style.background-color]="item.color"
+                >
+                  <span class="bar-value">${{ item.value | number:'1.0-0' }}</span>
+                </div>
+              </div>
+              <span class="bar-label">{{ item.label }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-data">No revenue data available</div>
+      }
+    </div>
+  </div>
+
+  <!-- Bar Chart: Matches by Competition -->
+  <div class="chart-card wide">
+    <h3>Matches by Competition</h3>
+    <div class="horizontal-bar-container">
+      @if (matchesByCompetition().length > 0) {
+        <div class="horizontal-bars">
+          @for (item of matchesByCompetition(); track item.label) {
+            <div class="horizontal-bar-item">
+              <span class="horizontal-bar-label">{{ item.label }}</span>
+              <div class="horizontal-bar-wrapper">
+                <div 
+                  class="horizontal-bar" 
+                  [style.width.%]="getBarHeight(item.value, getMaxValue(matchesByCompetition()))"
+                  [style.background-color]="item.color"
+                >
+                </div>
+                <span class="horizontal-bar-value">{{ item.value }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-data">No match data available</div>
+      }
+    </div>
+  </div>
+</div>

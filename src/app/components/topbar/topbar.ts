@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../services/supabase';
+import { Search } from '../../services/search';
 
 @Component({
   selector: 'app-topbar',
@@ -16,7 +17,10 @@ export class TopbarComponent implements OnInit {
   showUserMenu = false;
   notificationCount = 0;
 
-  constructor(private supabase: SupabaseService) {}
+  constructor(
+    private supabase: SupabaseService,
+    private searchService: Search
+  ) {}
 
   ngOnInit() {
     this.loadUserProfile();
@@ -53,5 +57,9 @@ export class TopbarComponent implements OnInit {
     window.location.reload();
   }
 
+  onSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchService.setSearchTerm(input.value);
+  }
   
 }

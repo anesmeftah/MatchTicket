@@ -1,28 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Ticket } from '../models/ticket.model';
+import { SupabaseService } from './supabase';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TicketService {
-  private ticketsSignal = signal<Ticket[]>([
-    {
-      id: 1,
-      event: 'Champions League Final',
-      date: '2024-06-01',
-      seat: 'A12',
-      price: 150,
-      status: 'sold'
-    },
-    {
-      id: 2,
-      event: 'Premier League Match',
-      date: '2024-05-15',
-      seat: 'B5',
-      price: 75,
-      status: 'sold'
-    }
-  ]);
+  private supabase = inject(SupabaseService);
+  private ticketsSignal = signal<Ticket[]>([]);
 
   readonly tickets = this.ticketsSignal.asReadonly();
   
@@ -30,7 +15,18 @@ export class TicketService {
     return this.tickets();
   }
 
-  addTicket(ticket: Ticket){
-    this.ticketsSignal.update(tickets => [...tickets, ticket]);
+  async addTickets(tickets: any[]){
+    try {
+      const data = await this.supabase.addTickets(tickets);
+      if(data) {
+         // Optionally update local state if we were fetching all tickets
+         // For now just return success
+         return data;
+      }
+      return null;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 }
