@@ -23,17 +23,14 @@ interface Subscription {
   styleUrls: ['./subscription.component.css']
 })
 export class SubscriptionComponent {
-  // Liste des plans disponibles
   plans: Plan[] = [
     { id: 1, name: 'Basic', price: 9.99 },
     { id: 2, name: 'Premium', price: 24.99 },
     { id: 3, name: 'VIP', price: 49.99 }
   ];
 
-  // Abonnements actifs
   activeSubscriptions: Subscription[] = [];
 
-  // Données du formulaire
   formData = {
     nom: '',
     prenom: '',
@@ -43,7 +40,6 @@ export class SubscriptionComponent {
   selectedPlan: string = '';
   message: string = '';
 
-  // Soumettre le formulaire
   onSubmit() {
     if (!this.formData.nom || !this.formData.prenom || !this.formData.email || !this.selectedPlan) {
       this.message = '⚠️ Tous les champs sont requis';
@@ -66,8 +62,6 @@ export class SubscriptionComponent {
 
     this.activeSubscriptions.push(newSub);
     this.message = '✓ Abonnement activé avec succès !';
-
-    // Réinitialiser le formulaire
     this.formData = { nom: '', prenom: '', email: '' };
     this.selectedPlan = '';
 
