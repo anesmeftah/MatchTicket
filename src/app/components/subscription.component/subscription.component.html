@@ -52,7 +52,16 @@
           class="form-control"
         />
       </div>
-
+       <div class="form-group">
+        <label>Équipe</label>
+        <input 
+          type="text" 
+          [(ngModel)]="formData.equipe" 
+          name="equipe"
+          class="form-control"
+          placeholder="Ex: Real Madrid"
+        />
+      </div>
       <div class="form-group">
         <label>Choisir un plan</label>
         <select 

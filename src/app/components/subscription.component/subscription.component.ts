@@ -34,7 +34,8 @@ export class SubscriptionComponent {
   formData = {
     nom: '',
     prenom: '',
-    email: ''
+    email: '',
+    equipe: ''
   };
 
   selectedPlan: string = '';
@@ -62,7 +63,7 @@ export class SubscriptionComponent {
 
     this.activeSubscriptions.push(newSub);
     this.message = '✓ Abonnement activé avec succès !';
-    this.formData = { nom: '', prenom: '', email: '' };
+    this.formData = { nom: '', prenom: '', email: '', equipe: '' };
     this.selectedPlan = '';
 
     setTimeout(() => {

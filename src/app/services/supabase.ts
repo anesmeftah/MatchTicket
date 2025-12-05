@@ -256,25 +256,51 @@ export class SupabaseService {
     const total = data?.reduce((sum, ticket) => sum + (ticket.price || 0), 0) || 0
     return total
   }
-  async getUser(userId: number) {
-    const { data, error } = await this.supabase
-      .from('user')
-          .select('*').eq('id', userId).single();
+async getUser1(userId: number): Promise<UserData | null> {
+    try {
+      const { data, error } = await this.supabase
+        .from('user')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) {
+        console.error('Erreur getUser1:', error);
+        return null;
+      }
+      return data as UserData;
+    } catch (error) {
+      console.error('Erreur getUser1:', error);
+      return null;
+    }
   }
-  async updateUser1(userData: UserData) {
-    const { data, error } = await this.supabase
-      .from('user')   .update({
+async updateUser1(userData: UserData): Promise<boolean> {
+    try {
+      const updateData: any = {
         nom: userData.nom,
         prenom: userData.prenom,
         email: userData.email
-      })
-      .eq('id', userData.id);
+      };
 
-    if (error) throw error;
-    return data;
+      // Ajouter le mot de passe seulement s'il est fourni
+      if (userData.password && userData.password.trim() !== '') {
+        updateData.password = userData.password;
+      }
+
+      const { error } = await this.supabase
+        .from('user')
+        .update(updateData)
+        .eq('id', userData.id);
+
+      if (error) {
+        console.error('Erreur updateUser1:', error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Erreur updateUser1:', error);
+      return false;
+    }
   }
   async getCurrentAuthUser() {
     const { data: { user } } = await this.supabase.auth.getUser();
@@ -321,4 +347,54 @@ export class SupabaseService {
     }
     return data
   }
+
+async getUserByEmail(email: string): Promise<UserData | null> {
+  const { data, error } = await this.supabase
+    .from('user')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (error) {
+    console.error('Erreur récupération utilisateur:', error);
+    return null;
+  }
+  return data;
+}
+
+async updateUserProfile(userData: UserData) {
+  // Mise à jour sans le mot de passe (à gérer séparément)
+  const { data, error } = await this.supabase
+    .from('user')
+    .update({
+      nom: userData.nom,
+      prenom: userData.prenom,
+      email: userData.email
+      // Ne pas mettre à jour le mot de passe ici
+    })
+    .eq('id', userData.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Erreur mise à jour utilisateur:', error);
+    throw error;
+  }
+  return data;
+}
+
+async updatePassword(userId: number, newPassword: string) {
+  // Si tu veux mettre à jour le mot de passe séparément
+  const { data, error } = await this.supabase
+    .from('user')
+    .update({ password: newPassword })
+    .eq('id', userId);
+
+  if (error) {
+    console.error('Erreur mise à jour mot de passe:', error);
+    throw error;
+  }
+  return data;
+}
+
 }

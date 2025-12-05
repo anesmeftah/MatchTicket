@@ -22,6 +22,7 @@ export class Profile {
     this.user = this.Auth.getUser();
     this.originalUser = { ...this.user };
   }
+  
 
   onSave() {
     if (!this.hasChanges()) {
