@@ -41,17 +41,6 @@ export class TopbarComponent implements OnInit {
     }, 60000); // Update every minute
   }
 
-  toggleNotifications() {
-    this.showNotifications = !this.showNotifications;
-  }
-
-  toggleUserMenu() {
-    this.showUserMenu = !this.showUserMenu;
-  }
-
-  async handleSignOut() {
-    await this.supabase.signOut();
-  }
 
   refreshData() {
     window.location.reload();

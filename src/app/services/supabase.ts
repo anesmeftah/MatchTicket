@@ -294,4 +294,31 @@ export class SupabaseService {
     
     return data
   }
+// Pour mahdi (insertion abonnement - Get abonnement )
+    async insertAbonnement(match: any) {
+    // Check if match exists to avoid duplicates
+    const { data: existing } = await this.supabase
+      .from('matches')
+      .select('id')
+      .eq('home_team', match.home_team)
+      .eq('away_team', match.away_team)
+      .eq('date', match.date)
+      .single()
+
+    if (existing) {
+      return existing
+    }
+
+    const { data, error } = await this.supabase
+      .from('Abonnement')
+      .insert(match)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error inserting match:', error)
+      return null
+    }
+    return data
+  }
 }
