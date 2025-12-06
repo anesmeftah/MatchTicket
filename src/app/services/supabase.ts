@@ -361,33 +361,6 @@ async updateUser1(userData: UserData): Promise<boolean> {
     
     return data
   }
-// Pour mahdi (insertion abonnement - Get abonnement )
-    async insertAbonnement(match: any) {
-    // Check if match exists to avoid duplicates
-    const { data: existing } = await this.supabase
-      .from('matches')
-      .select('id')
-      .eq('home_team', match.home_team)
-      .eq('away_team', match.away_team)
-      .eq('date', match.date)
-      .single()
-
-    if (existing) {
-      return existing
-    }
-
-    const { data, error } = await this.supabase
-      .from('Abonnement')
-      .insert(match)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error inserting match:', error)
-      return null
-    }
-    return data
-  }
 
 async getUserByEmail(email: string): Promise<UserData | null> {
   const { data, error } = await this.supabase
@@ -401,6 +374,121 @@ async getUserByEmail(email: string): Promise<UserData | null> {
     return null;
   }
   return data;
+}
+
+async getUserIdByEmail(email: string): Promise<number | null> {
+  try {
+    console.log('🔍 Looking for user with email:', email);
+    
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (error) {
+      console.error('❌ User not found:', error);
+      return null;
+    }
+    
+    console.log('✅ User found with ID:', data.id);
+    return data.id;
+  } catch (error) {
+    console.error('❌ Error fetching user ID:', error);
+    return null;
+  }
+}
+
+async getLastUserId(): Promise<number> {
+  try {
+    console.log('🔍 Getting last user ID from database');
+    
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !data) {
+      console.log('⚠️ No users found, starting from ID 1');
+      return 1;
+    }
+    
+    console.log('✅ Last user ID:', data.id);
+    return data.id;
+  } catch (error) {
+    console.error('❌ Error fetching last user ID:', error);
+    return 1;
+  }
+}
+
+async getAbonnementByUserId(userId: number) {
+  try {
+    console.log('🔍 Fetching subscriptions for user ID:', userId);
+    
+    const { data, error } = await this.supabase
+      .from('Abonnement')
+      .select('*')
+      .eq('id_utilisateur', userId)
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.log('No subscriptions found');
+      return [];
+    }
+    
+    console.log('✅ Subscriptions fetched:', data);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Error fetching subscriptions:', error);
+    return [];
+  }
+}
+
+async insertAbonnement(abonnement: any) {
+  try {
+    console.log('📝 Inserting new subscription:', abonnement);
+    
+    const { data, error } = await this.supabase
+      .from('Abonnement')
+      .insert(abonnement)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error inserting subscription:', error);
+      return null;
+    }
+    
+    console.log('✅ Subscription created:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Exception in insertAbonnement:', error);
+    return null;
+  }
+}
+
+async updateAbonnement(abonnement: any) {
+  try {
+    console.log('📝 Updating subscription:', abonnement);
+    
+    const { error } = await this.supabase
+      .from('Abonnement')
+      .update(abonnement)
+      .eq('id', abonnement.id);
+
+    if (error) {
+      console.error('❌ Error updating subscription:', error);
+      return false;
+    }
+    
+    console.log('✅ Subscription updated');
+    return true;
+  } catch (error) {
+    console.error('❌ Exception in updateAbonnement:', error);
+    return false;
+  }
 }
 
 async updateUserProfile(userData: UserData) {

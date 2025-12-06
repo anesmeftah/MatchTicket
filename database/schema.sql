@@ -72,8 +72,31 @@ create table public.users (
 
 create index IF not exists idx_users_email on public.users using btree (email) TABLESPACE pg_default;
 
+create table public."Abonnement" (
+  id bigserial not null,
+  id_utilisateur integer not null,
+  equipe character varying(255) null,
+  plan_name character varying(100) null,
+  price numeric(10, 2) null,
+  startdate date null,
+  enddate date null,
+  created_at timestamp without time zone null default CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone null default CURRENT_TIMESTAMP,
+  constraint abonnement_pkey primary key (id),
+  constraint abonnement_id_utilisateur_fkey foreign KEY (id_utilisateur) references users (id) on delete CASCADE,
+  constraint abonnement_unique_team_per_user unique(id_utilisateur, equipe)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_abonnement_id_utilisateur on public."Abonnement" using btree (id_utilisateur) TABLESPACE pg_default;
+
 -- Insert sample user data
 INSERT INTO public.users (id, email, nom, prenom, password) 
 VALUES (1, 'maindf@gmail.com', 'Dupont', 'Jean', '123456')
 ON CONFLICT DO NOTHING;
+
+-- Insert sample subscription data
+INSERT INTO public."Abonnement" (id_utilisateur, equipe, plan_name, price, startdate, enddate) 
+VALUES (1, 'Real Madrid', 'VIP', 49.99, CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days')
+ON CONFLICT DO NOTHING;
+
 

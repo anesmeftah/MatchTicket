@@ -3,24 +3,27 @@
   <div class="active-section">
     <h2>Abonnements Actifs</h2>
     
-    <div *ngFor="let sub of activeSubscriptions" class="subscription-card">
-      <div class="sub-header">
-        <span class="sub-name">{{ sub.name }}</span>
-        <span class="sub-price">{{ sub.price }}€/mois</span>
-      </div>
-      <div class="sub-dates">
-        <span>Début: {{ sub.startDate }}</span>
-        <span>Fin: {{ sub.endDate }}</span>
+    <div *ngIf="activeSubscription.length > 0" class="subscriptions-list">
+      <div *ngFor="let sub of activeSubscription" class="subscription-card">
+        <div class="sub-header">
+          <span class="sub-name">{{ sub.equipe }}</span>
+          <span class="sub-plan">{{ sub.plan_name }}</span>
+          <span class="sub-price">{{ sub.price }}€/mois</span>
+        </div>
+        <div class="sub-dates">
+          <div><strong>Début:</strong> {{ sub.startdate || sub.startDate || 'N/A' }}</div>
+          <div><strong>Fin:</strong> {{ sub.enddate || sub.endDate || 'N/A' }}</div>
+        </div>
       </div>
     </div>
 
-    <div *ngIf="activeSubscriptions.length === 0" class="no-subscription">
+    <div *ngIf="activeSubscription.length === 0" class="no-subscription">
       Aucun abonnement actif
     </div>
   </div>
 
   <div class="form-section">
-    <h2>Souscrire à un abonnement</h2>
+    <h2>Créer un nouvel abonnement</h2>
 
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -52,7 +55,8 @@
           class="form-control"
         />
       </div>
-       <div class="form-group">
+
+      <div class="form-group">
         <label>Équipe</label>
         <input 
           type="text" 
@@ -62,6 +66,7 @@
           placeholder="Ex: Real Madrid"
         />
       </div>
+
       <div class="form-group">
         <label>Choisir un plan</label>
         <select 
@@ -76,12 +81,8 @@
         </select>
       </div>
 
-      <div *ngIf="message" class="message">
-        {{ message }}
-      </div>
-
       <button type="submit" class="btn-submit">
-        Souscrire
+        Enregistrer
       </button>
     </form>
   </div>
