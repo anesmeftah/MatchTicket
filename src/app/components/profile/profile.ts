@@ -1,8 +1,8 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Auth } from '../../services/auth';
+import { SupabaseService } from '../../services/supabase';
 import { User } from '../../models/user.model';
 
 @Component({
@@ -12,45 +12,84 @@ import { User } from '../../models/user.model';
   templateUrl: './profile.html',
   styleUrls: ['./profile.css']
 })
-export class Profile {
-  user: User;
-  originalUser: User;
-  message: string = '';
-  errorMessage: string = "";
-
-  constructor(private Auth: Auth) {
-    this.user = this.Auth.getUser();
-    this.originalUser = { ...this.user };
-  }
+export class Profile implements OnInit {
+  private supabaseService = inject(SupabaseService);
   
+  user: User | any = {
+    id: 1,
+    email: 'maindf@gmail.com',
+    nom: 'Dupont',
+    prenom: 'Jean',
+    password: '123456'
+  };
+  originalUser: User | any = {
+    id: 1,
+    email: 'maindf@gmail.com',
+    nom: 'Dupont',
+    prenom: 'Jean',
+    password: '123456'
+  };
+  message: string = '';
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
-  onSave() {
-    if (!this.hasChanges()) {
-            this.errorMessage = '❌ Aucune modification détectée';
-            this.message = "";
-            setTimeout(() => {
-                this.errorMessage = "";
-            }, 3000);
-            return; 
-        }
-    this.Auth.updateUser(this.user);
-    this.message = '✓ Profil mis à jour avec succès !';
-     this.errorMessage = "";
-        
-        this.originalUser = { ...this.user };
-        
-    setTimeout(() => {
-      this.message = '';
-    }, 3000);
+  ngOnInit() {
+    // Initialiser directement avec les données locales
+    this.originalUser = { ...this.user };
+    console.log('✓ Profile loaded with default data:', this.user);
+    
+    // Charger en arrière-plan depuis Supabase (non bloquant)
+    this.loadUserDataInBackground();
   }
-  onCancel() {
-    this.user = this.Auth.getUser();
-    this.message = '';
-  }
-    private hasChanges(): boolean {
-        return JSON.stringify(this.user) !== JSON.stringify(this.originalUser);
+
+  // Charger en arrière-plan sans bloquer l'affichage
+  private async loadUserDataInBackground() {
+    try {
+      const userData = await this.supabaseService.getUser1(1);
+      if (userData) {
+        this.user = userData;
+        this.originalUser = { ...userData };
+        console.log('✓ User loaded from Supabase:', this.user);
+      }
+    } catch (error) {
+      console.error('Background load error:', error);
     }
-      getPasswordStars(): string {
-    return '*'.repeat(this.user.password.length);
+  }
+
+  async onSave() {
+    if (!this.hasChanges()) {
+      alert('❌ Aucune modification détectée');
+      return; 
+    }
+
+    try {
+      console.log('💾 Saving changes to database...');
+      const success = await this.supabaseService.updateUser1(this.user);
+      if (success) {
+        alert('✅ Enregistré avec succès!');
+        this.originalUser = { ...this.user };
+        this.errorMessage = '';
+        console.log('✓ User updated in database:', this.user);
+      } else {
+        alert('❌ Erreur lors de la mise à jour');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      alert('❌ Erreur: ' + (error as any).message);
+    }
+  }
+
+  onCancel() {
+    this.user = { ...this.originalUser };
+    this.message = '';
+    this.errorMessage = '';
+  }
+
+  private hasChanges(): boolean {
+    return JSON.stringify(this.user) !== JSON.stringify(this.originalUser);
+  }
+
+  getPasswordStars(): string {
+    return this.user?.password ? '*'.repeat(this.user.password.length) : '';
   }
 }

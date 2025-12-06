@@ -5,8 +5,13 @@
   </div>
 
   <div class="profile-content">
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
     <!-- Section Statistiques (Affichage) -->
-    <div class="stats-section">
+    <div class="stats-section" *ngIf="user">
       <h2 class="section-title">Statistiques</h2>
       
       <div class="stat-card">
@@ -24,14 +29,14 @@
         <div class="stat-value">{{ user.email }}</div>
       </div>
 
-  <div class="stat-card">
+      <div class="stat-card">
         <div class="stat-label">Mot de passe</div>
         <div class="stat-value">{{ getPasswordStars() }}</div>
       </div>
     </div>
 
     <!-- Section Modification -->
-    <div class="form-section">
+    <div class="form-section" *ngIf="user">
       <h2 class="section-title">Modifier mes informations</h2>
 
       <form (ngSubmit)="onSave()">
@@ -77,16 +82,6 @@
             class="form-control"
             placeholder="Laisser vide pour ne pas changer"
           />
-        </div>
-
-        <!-- Message de succès -->
-        <div *ngIf="message" class="alert alert-success">
-          {{ message }}
-        </div>
-
-        <!-- Message d'erreur -->
-        <div *ngIf="errorMessage" class="alert alert-error">
-          {{ errorMessage }}
         </div>
 
         <div class="form-actions">

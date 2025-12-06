@@ -57,3 +57,23 @@ create index IF not exists idx_matches_competition on public.matches using btree
 create trigger update_matches_updated_at BEFORE
 update on matches for EACH row
 execute FUNCTION update_updated_at_column ();
+
+create table public.users (
+  id serial not null,
+  email character varying(255) not null,
+  nom character varying(100) not null,
+  prenom character varying(100) not null,
+  password character varying(255) null,
+  created_at timestamp without time zone null default CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone null default CURRENT_TIMESTAMP,
+  constraint users_pkey primary key (id),
+  constraint users_email_key unique (email)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_users_email on public.users using btree (email) TABLESPACE pg_default;
+
+-- Insert sample user data
+INSERT INTO public.users (id, email, nom, prenom, password) 
+VALUES (1, 'maindf@gmail.com', 'Dupont', 'Jean', '123456')
+ON CONFLICT DO NOTHING;
+
