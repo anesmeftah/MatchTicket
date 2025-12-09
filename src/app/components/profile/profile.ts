@@ -58,24 +58,24 @@ export class Profile implements OnInit {
 
   async onSave() {
     if (!this.hasChanges()) {
-      alert('❌ Aucune modification détectée');
+      alert('Aucune modification détectée');
       return; 
     }
 
     try {
-      console.log('💾 Saving changes to database...');
+      console.log('Saving changes to database...');
       const success = await this.supabaseService.updateUser1(this.user);
       if (success) {
-        alert('✅ Enregistré avec succès!');
+        alert('Enregistré avec succès!');
         this.originalUser = { ...this.user };
         this.errorMessage = '';
         console.log('✓ User updated in database:', this.user);
       } else {
-        alert('❌ Erreur lors de la mise à jour');
+        alert('Erreur lors de la mise à jour');
       }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
-      alert('❌ Erreur: ' + (error as any).message);
+      alert('Erreur: ' + (error as any).message);
     }
   }
 

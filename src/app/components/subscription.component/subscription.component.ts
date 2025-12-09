@@ -59,9 +59,9 @@ export class SubscriptionComponent implements OnInit {
 
   async loadUserSubscription() {
     try {
-      console.log('🔍 Loading subscriptions for user ID:', this.userId);
+      console.log('Loading subscriptions for user ID:', this.userId);
       const subscriptions = await this.supabaseService.getAbonnementByUserId(this.userId);
-      console.log('📌 Subscriptions data retrieved:', subscriptions);
+      console.log('Subscriptions data retrieved:', subscriptions);
       if (subscriptions && subscriptions.length > 0) {
         this.activeSubscription = subscriptions.map(sub => ({
           id: sub.id,
@@ -74,47 +74,46 @@ export class SubscriptionComponent implements OnInit {
           created_at: sub.created_at,
           updated_at: sub.updated_at
         }));
-        console.log('✅ Subscriptions loaded:', this.activeSubscription);
-        console.log('📅 First subscription dates:', this.activeSubscription[0]?.startdate, this.activeSubscription[0]?.enddate);
+        console.log('Subscriptions loaded:', this.activeSubscription);
+        console.log('First subscription dates:', this.activeSubscription[0]?.startdate, this.activeSubscription[0]?.enddate);
         this.cdr.detectChanges();
       } else {
         console.log('No subscriptions found for this user');
         this.activeSubscription = [];
       }
     } catch (error) {
-      console.error('❌ Error loading subscriptions:', error);
+      console.error('Error loading subscriptions:', error);
     }
   }
 
   async onSubmit() {
     if (!this.formData.nom || !this.formData.prenom || !this.formData.email || !this.selectedPlan || !this.formData.equipe) {
-      alert('⚠️ Tous les champs sont requis');
+      alert('Tous les champs sont requis');
       return;
     }
 
     try {
-      // Try to find user by email
-      console.log('🔍 Checking email:', this.formData.email);
+
+      console.log('Checking email:', this.formData.email);
       let foundUserId = await this.supabaseService.getUserIdByEmail(this.formData.email);
-      console.log('📌 Result from getUserIdByEmail:', foundUserId);
+      console.log('Result from getUserIdByEmail:', foundUserId);
       
-      // If email not found, get next available user ID
+
       if (!foundUserId) {
-        console.log('⚠️ Email not found, getting next available user ID');
+        console.log('Email not found, getting next available user ID');
         const lastUserId = await this.supabaseService.getLastUserId();
         foundUserId = lastUserId + 1;
-        console.log('✅ Next user ID will be:', foundUserId);
+        console.log('Next user ID will be:', foundUserId);
       }
 
       this.userId = foundUserId;
-      console.log('✅ User ID for subscription:', this.userId);
+      console.log('User ID for subscription:', this.userId);
 
-      // Check if user already has a subscription for this team
       const existingSubscriptions = await this.supabaseService.getAbonnementByUserId(this.userId);
       if (existingSubscriptions && existingSubscriptions.length > 0) {
         const duplicateTeam = existingSubscriptions.find(sub => sub.equipe === this.formData.equipe);
         if (duplicateTeam) {
-          alert('❌ Vous avez déjà un abonnement pour cette équipe!');
+          alert('Vous avez déjà un abonnement pour cette équipe!');
           return;
         }
       }
@@ -135,22 +134,21 @@ export class SubscriptionComponent implements OnInit {
         enddate: endDate.toISOString().split('T')[0]
       };
 
-      // Create new subscription
-      console.log('📝 Creating new subscription with data:', abonnementData);
+      console.log('Creating new subscription with data:', abonnementData);
       const newSub = await this.supabaseService.insertAbonnement(abonnementData);
-      console.log('📌 Insert result:', newSub);
+      console.log('Insert result:', newSub);
       
       if (newSub) {
-        alert('✅ Abonnement enregistré avec succès !');
+        alert('Abonnement enregistré avec succès !');
         this.formData = { nom: '', prenom: '', email: '', equipe: '' };
         this.selectedPlan = '';
         this.loadUserSubscription();
       } else {
-        alert('❌ Erreur lors de l\'enregistrement de l\'abonnement. Vérifiez la console.');
+        alert('Erreur lors de l\'enregistrement de l\'abonnement. Vérifiez la console.');
       }
     } catch (error) {
-      console.error('❌ Exception in onSubmit:', error);
-      alert('❌ Erreur: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+      console.error('Exception in onSubmit:', error);
+      alert('Erreur: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
     }
   }
 }

@@ -19,8 +19,6 @@ export class TicketService {
     try {
       const data = await this.supabase.addTickets(tickets);
       if(data) {
-         // Optionally update local state if we were fetching all tickets
-         // For now just return success
          return data;
       }
       return null;

@@ -8,7 +8,6 @@ import { MatchService } from '../../services/match';
 import { TicketService } from '../../services/ticket';
 import { Search } from '../../services/search';
 import { Match } from '../../models/match.model';
-import { Ticket } from '../../models/ticket.model';
 
 @Component({
   selector: 'app-tickets',
@@ -79,9 +78,8 @@ export class Tickets {
     if (!match) return;
 
     const ticketsToAdd = [];
-    const section = this.selectedSeat().substring(0, 1); // Extract 'A', 'B', or 'V' (for VIP)
-    const row = parseInt(this.selectedSeat().substring(1)) || 1; // Extract row number
-
+    const section = this.selectedSeat().substring(0, 1);
+    const row = parseInt(this.selectedSeat().substring(1)) || 1;
     for(let i=0; i<this.ticketQuantity(); i++) {
         const seatNumber = i + 1;
         ticketsToAdd.push({
@@ -99,7 +97,6 @@ export class Tickets {
     
     try {
       await this.ticketService.addTickets(ticketsToAdd);
-      console.log(`Generated ${this.ticketQuantity()} tickets for ${match.homeTeam} vs ${match.awayTeam}`);
       this.closeBookingModal();
     } catch (error) {
       console.error('Failed to generate tickets', error);

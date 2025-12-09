@@ -2,12 +2,9 @@ import { Component, inject, signal, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SupabaseService } from '../../services/supabase';
 import { MatchService } from '../../services/match';
+import { ChartData } from '../../models/chartdata.model';
 
-interface ChartData {
-  label: string;
-  value: number;
-  color: string;
-}
+
 
 @Component({
   selector: 'app-dashboard-chart',
@@ -25,10 +22,6 @@ export class DashboardChart implements OnInit {
   protected readonly matchesByCompetition = signal<ChartData[]>([]);
   protected readonly totalTickets = signal<number>(0);
 
-  private readonly colors = [
-    '#4A70A9', '#6B8FC7', '#8FADE5', '#A8C4F0', '#C5DBFA',
-    '#2E5A88', '#1E4A78', '#0E3A68', '#003058', '#002048'
-  ];
 
   async ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -58,14 +51,13 @@ export class DashboardChart implements OnInit {
     });
 
     const chartData: ChartData[] = [];
-    let colorIndex = 0;
+
     statusCounts.forEach((count, status) => {
       chartData.push({
         label: status.charAt(0).toUpperCase() + status.slice(1),
         value: count,
-        color: this.colors[colorIndex % this.colors.length]
       });
-      colorIndex++;
+
     });
 
     this.ticketsByStatus.set(chartData);
@@ -84,21 +76,17 @@ export class DashboardChart implements OnInit {
     data.forEach((ticket: any) => {
       if (ticket.date && ticket.price) {
         const date = new Date(ticket.date);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         const monthName = date.toLocaleString('default', { month: 'short', year: '2-digit' });
         monthlyRevenue.set(monthName, (monthlyRevenue.get(monthName) || 0) + ticket.price);
       }
     });
 
     const chartData: ChartData[] = [];
-    let colorIndex = 0;
     monthlyRevenue.forEach((revenue, month) => {
       chartData.push({
         label: month,
         value: revenue,
-        color: this.colors[colorIndex % this.colors.length]
       });
-      colorIndex++;
     });
 
     this.revenueByMonth.set(chartData.slice(-6)); // Last 6 months
@@ -118,14 +106,11 @@ export class DashboardChart implements OnInit {
     });
 
     const chartData: ChartData[] = [];
-    let colorIndex = 0;
     competitionCounts.forEach((count, competition) => {
       chartData.push({
         label: competition,
         value: count,
-        color: this.colors[colorIndex % this.colors.length]
       });
-      colorIndex++;
     });
 
     // Sort by count and take top 6
@@ -165,7 +150,7 @@ export class DashboardChart implements OnInit {
   }
 
   getMaxValue(data: ChartData[]): number {
-    return Math.max(...data.map(d => d.value), 1);
+    return Math.max(...data.map(item => item.value), 1);
   }
 
   getBarHeight(value: number, maxValue: number): number {

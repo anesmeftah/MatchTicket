@@ -38,7 +38,7 @@ export class TopbarComponent implements OnInit {
   updateTime() {
     setInterval(() => {
       this.currentDate = new Date();
-    }, 60000); // Update every minute
+    }, 60000);
   }
 
 

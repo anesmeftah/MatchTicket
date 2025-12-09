@@ -199,6 +199,43 @@
   font-size: 14px;
 }
 
+/* Fixed Color Palette using data-index */
+.pie-segment[data-index="0"] { fill: #4f46e5; }
+.pie-segment[data-index="1"] { fill: #06b6d4; }
+.pie-segment[data-index="2"] { fill: #10b981; }
+.pie-segment[data-index="3"] { fill: #f59e0b; }
+.pie-segment[data-index="4"] { fill: #ef4444; }
+.pie-segment[data-index="5"] { fill: #8b5cf6; }
+.pie-segment[data-index="6"] { fill: #ec4899; }
+.pie-segment[data-index="7"] { fill: #14b8a6; }
+
+.legend-color[data-index="0"] { background-color: #4f46e5; }
+.legend-color[data-index="1"] { background-color: #06b6d4; }
+.legend-color[data-index="2"] { background-color: #10b981; }
+.legend-color[data-index="3"] { background-color: #f59e0b; }
+.legend-color[data-index="4"] { background-color: #ef4444; }
+.legend-color[data-index="5"] { background-color: #8b5cf6; }
+.legend-color[data-index="6"] { background-color: #ec4899; }
+.legend-color[data-index="7"] { background-color: #14b8a6; }
+
+.bar[data-index="0"] { background: linear-gradient(to top, #4f46e5, #6366f1); }
+.bar[data-index="1"] { background: linear-gradient(to top, #06b6d4, #22d3ee); }
+.bar[data-index="2"] { background: linear-gradient(to top, #10b981, #34d399); }
+.bar[data-index="3"] { background: linear-gradient(to top, #f59e0b, #fbbf24); }
+.bar[data-index="4"] { background: linear-gradient(to top, #ef4444, #f87171); }
+.bar[data-index="5"] { background: linear-gradient(to top, #8b5cf6, #a78bfa); }
+.bar[data-index="6"] { background: linear-gradient(to top, #ec4899, #f472b6); }
+.bar[data-index="7"] { background: linear-gradient(to top, #14b8a6, #2dd4bf); }
+
+.horizontal-bar[data-index="0"] { background: linear-gradient(to right, #4f46e5, #6366f1); }
+.horizontal-bar[data-index="1"] { background: linear-gradient(to right, #06b6d4, #22d3ee); }
+.horizontal-bar[data-index="2"] { background: linear-gradient(to right, #10b981, #34d399); }
+.horizontal-bar[data-index="3"] { background: linear-gradient(to right, #f59e0b, #fbbf24); }
+.horizontal-bar[data-index="4"] { background: linear-gradient(to right, #ef4444, #f87171); }
+.horizontal-bar[data-index="5"] { background: linear-gradient(to right, #8b5cf6, #a78bfa); }
+.horizontal-bar[data-index="6"] { background: linear-gradient(to right, #ec4899, #f472b6); }
+.horizontal-bar[data-index="7"] { background: linear-gradient(to right, #14b8a6, #2dd4bf); }
+
 /* Responsive */
 @media (max-width: 900px) {
   .charts-container {
