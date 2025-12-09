@@ -518,5 +518,113 @@ async updatePassword(userId: number, newPassword: string) {
   }
   return data;
 }
+// Ajoutez ces méthodes à la fin de votre classe SupabaseService
+// (juste avant le dernier "}")
 
+/**
+ * Inscription avec email et mot de passe
+ */
+async signUpWithPassword(email: string, password: string, nom?: string, prenom?: string) {
+  try {
+    // Créer le nom complet
+    const fullName = `${nom || ''} ${prenom || ''}`.trim();
+    
+    console.log('Inscription avec:', { email, nom, prenom, fullName }); // Pour debug
+    
+    // 1. Créer le compte dans Supabase Auth
+    const { data: authData, error: authError } = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          nom: nom,
+          prenom: prenom,
+          full_name: fullName,
+          display_name: fullName
+        }
+      }
+    });
+
+    if (authError) {
+      console.error('Erreur auth:', authError);
+      throw authError;
+    }
+
+    console.log('Utilisateur créé:', authData);
+
+    // 2. Insérer dans la table user
+    if (authData.user) {
+      const { error: insertError } = await this.supabase
+        .from('user')
+        .insert({
+          email: email,
+          nom: nom || '',
+          prenom: prenom || ''
+        });
+
+      if (insertError) {
+        console.error('Erreur insertion table user:', insertError);
+      }
+    }
+
+    return { data: authData, error: null };
+  } catch (error: any) {
+    console.error('Exception signUpWithPassword:', error);
+    return { data: null, error: error };
+  }
+}
+/**
+ * Connexion avec email et mot de passe
+ */
+async signInWithPassword(email: string, password: string) {
+  try {
+    const { data, error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error: error };
+  }
+}
+
+/**
+ * Vérifier si l'utilisateur est connecté
+ */
+isLoggedIn(): boolean {
+  return this._session !== null;
+}
+
+/**
+ * Obtenir l'utilisateur actuel
+ */
+async getCurrentUser() {
+  const { data: { user }, error } = await this.supabase.auth.getUser();
+  if (error) {
+    console.error('Erreur récupération utilisateur:', error);
+    return null;
+  }
+  return user;
+}
+
+/**
+ * Réinitialisation du mot de passe
+ */
+async resetPassword(email: string) {
+  try {
+    const { data, error } = await this.supabase.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo: `${window.location.origin}/reset-password`
+      }
+    );
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error: error };
+  }
+}
 }
