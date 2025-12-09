@@ -258,7 +258,7 @@ export class SupabaseService {
   }
 async getUser1(userId: number): Promise<UserData | null> {
     try {
-      console.log('🔍 Fetching user with ID:', userId);
+      console.log('Fetching user with ID:', userId);
       
       const { data, error } = await this.supabase
         .from('users')
@@ -267,14 +267,12 @@ async getUser1(userId: number): Promise<UserData | null> {
         .single();
 
       if (error) {
-        console.error('❌ Erreur getUser1:', {
+        console.error(' Erreur getUser1:', {
           message: error.message,
           code: error.code,
           details: error.details
         });
-        
-        // Fallback: retourner des données d'exemple
-        console.warn('⚠️ Returning fallback user data');
+        console.warn('Returning fallback user data');
         return {
           id: 1,
           email: 'maindf@gmail.com',
@@ -285,7 +283,7 @@ async getUser1(userId: number): Promise<UserData | null> {
       }
       
       if (!data) {
-        console.warn('⚠️ No user data returned');
+        console.warn(' No user data returned');
         return {
           id: 1,
           email: 'maindf@gmail.com',
@@ -295,12 +293,11 @@ async getUser1(userId: number): Promise<UserData | null> {
         };
       }
       
-      console.log('✅ User fetched successfully:', data);
+      console.log(' User fetched successfully:', data);
       return data as UserData;
       
     } catch (error) {
-      console.error('❌ Exception in getUser1:', error);
-      // Fallback
+      console.error(' Exception in getUser1:', error);
       return {
         id: 1,
         email: 'maindf@gmail.com',
@@ -312,7 +309,7 @@ async getUser1(userId: number): Promise<UserData | null> {
   }
 async updateUser1(userData: UserData): Promise<boolean> {
     try {
-      console.log('📝 Updating user:', userData);
+      console.log('Updating user:', userData);
       
       const updateData: any = {
         nom: userData.nom,
@@ -321,7 +318,6 @@ async updateUser1(userData: UserData): Promise<boolean> {
         updated_at: new Date().toISOString()
       };
 
-      // Ajouter le mot de passe seulement s'il est fourni
       if (userData.password && userData.password.trim() !== '') {
         updateData.password = userData.password;
       }
@@ -332,14 +328,14 @@ async updateUser1(userData: UserData): Promise<boolean> {
         .eq('id', userData.id);
 
       if (error) {
-        console.error('❌ Erreur updateUser1:', error);
+        console.error('Erreur updateUser1:', error);
         return false;
       }
       
-      console.log('✅ User updated successfully in database');
+      console.log('User updated successfully in database');
       return true;
     } catch (error) {
-      console.error('❌ Exception in updateUser1:', error);
+      console.error(' Exception in updateUser1:', error);
       return false;
     }
   }
@@ -387,14 +383,14 @@ async getUserIdByEmail(email: string): Promise<number | null> {
       .single();
 
     if (error) {
-      console.error('❌ User not found:', error);
+      console.error(' User not found:', error);
       return null;
     }
     
-    console.log('✅ User found with ID:', data.id);
+    console.log('User found with ID:', data.id);
     return data.id;
   } catch (error) {
-    console.error('❌ Error fetching user ID:', error);
+    console.error(' Error fetching user ID:', error);
     return null;
   }
 }
@@ -411,21 +407,21 @@ async getLastUserId(): Promise<number> {
       .single();
 
     if (error || !data) {
-      console.log('⚠️ No users found, starting from ID 1');
+      console.log(' No users found, starting from ID 1');
       return 1;
     }
     
-    console.log('✅ Last user ID:', data.id);
+    console.log(' Last user ID:', data.id);
     return data.id;
   } catch (error) {
-    console.error('❌ Error fetching last user ID:', error);
+    console.error(' Error fetching last user ID:', error);
     return 1;
   }
 }
 
 async getAbonnementByUserId(userId: number) {
   try {
-    console.log('🔍 Fetching subscriptions for user ID:', userId);
+    console.log(' Fetching subscriptions for user ID:', userId);
     
     const { data, error } = await this.supabase
       .from('Abonnement')
@@ -438,17 +434,17 @@ async getAbonnementByUserId(userId: number) {
       return [];
     }
     
-    console.log('✅ Subscriptions fetched:', data);
+    console.log(' Subscriptions fetched:', data);
     return data || [];
   } catch (error) {
-    console.error('❌ Error fetching subscriptions:', error);
+    console.error(' Error fetching subscriptions:', error);
     return [];
   }
 }
 
 async insertAbonnement(abonnement: any) {
   try {
-    console.log('📝 Inserting new subscription:', abonnement);
+    console.log('Inserting new subscription:', abonnement);
     
     const { data, error } = await this.supabase
       .from('Abonnement')
@@ -457,21 +453,21 @@ async insertAbonnement(abonnement: any) {
       .single();
 
     if (error) {
-      console.error('❌ Error inserting subscription:', error);
+      console.error(' Error inserting subscription:', error);
       return null;
     }
     
-    console.log('✅ Subscription created:', data);
+    console.log('Subscription created:', data);
     return data;
   } catch (error) {
-    console.error('❌ Exception in insertAbonnement:', error);
+    console.error(' Exception in insertAbonnement:', error);
     return null;
   }
 }
 
 async updateAbonnement(abonnement: any) {
   try {
-    console.log('📝 Updating subscription:', abonnement);
+    console.log(' Updating subscription:', abonnement);
     
     const { error } = await this.supabase
       .from('Abonnement')
@@ -479,27 +475,25 @@ async updateAbonnement(abonnement: any) {
       .eq('id', abonnement.id);
 
     if (error) {
-      console.error('❌ Error updating subscription:', error);
+      console.error('Error updating subscription:', error);
       return false;
     }
     
-    console.log('✅ Subscription updated');
+    console.log('Subscription updated');
     return true;
   } catch (error) {
-    console.error('❌ Exception in updateAbonnement:', error);
+    console.error(' Exception in updateAbonnement:', error);
     return false;
   }
 }
 
 async updateUserProfile(userData: UserData) {
-  // Mise à jour sans le mot de passe (à gérer séparément)
   const { data, error } = await this.supabase
     .from('user')
     .update({
       nom: userData.nom,
       prenom: userData.prenom,
       email: userData.email
-      // Ne pas mettre à jour le mot de passe ici
     })
     .eq('id', userData.id)
     .select()
@@ -513,7 +507,6 @@ async updateUserProfile(userData: UserData) {
 }
 
 async updatePassword(userId: number, newPassword: string) {
-  // Si tu veux mettre à jour le mot de passe séparément
   const { data, error } = await this.supabase
     .from('user')
     .update({ password: newPassword })
