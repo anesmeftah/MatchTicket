@@ -14,8 +14,7 @@ import { NavItem } from '../../models/navitem.model';
 export class Sidebar {
   navItems: NavItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: '📊' },
-    { label: 'Tickets', route: '/dashboard/tickets', icon: '🎫' },
-    { label: 'Matches', route: '/dashboard/matches', icon: '⚽' }
+    { label: 'Tickets', route: '/dashboard/tickets', icon: '🎫' }
   ];
 
   constructor(private router: Router) {}
