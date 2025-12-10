@@ -7,6 +7,7 @@ import { TopbarComponent } from '../components/topbar/topbar';
 import { MatchesTable } from '../components/matchs-table/matches-table';
 import { DashboardChart } from '../components/dashboard-chart/dashboard-chart';
 import { AppHistogram } from '../components/app-histogram/app-histogram';
+import { SubscriptionChart } from '../components/subscription-chart/subscription-chart';
 import { SupabaseService } from '../services/supabase';
 import { MatchStat } from '../models/matchstats.model';
 
@@ -20,6 +21,7 @@ import { MatchStat } from '../models/matchstats.model';
     StatisticsCards, 
     AppHistogram,
     DashboardChart,
+    SubscriptionChart,
     TicketsTable, 
     MatchesTable
   ],
@@ -27,8 +29,9 @@ import { MatchStat } from '../models/matchstats.model';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  // Which view to show: 0 = histogram, 1 = dashboard chart
+  // Which view to show: 0 = histogram, 1 = dashboard chart, 2 = subscription chart
   currentView = signal<number>(0);
+  totalViews = 3;
   
   // Data for the histogram
   matchStats = signal<MatchStat[]>([]);
@@ -43,11 +46,11 @@ export class Dashboard implements OnInit {
 
   // Go to next view
   nextView() {
-    this.currentView.set(this.currentView() === 0 ? 1 : 0);
+    this.currentView.set((this.currentView() + 1) % this.totalViews);
   }
 
   // Go to previous view
   prevView() {
-    this.currentView.set(this.currentView() === 0 ? 1 : 0);
+    this.currentView.set((this.currentView() - 1 + this.totalViews) % this.totalViews);
   }
 }

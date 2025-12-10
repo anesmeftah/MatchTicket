@@ -14,6 +14,7 @@
         <div class="view-indicator">
             <span class="dot" [class.active]="currentView() === 0"></span>
             <span class="dot" [class.active]="currentView() === 1"></span>
+            <span class="dot" [class.active]="currentView() === 2"></span>
         </div>
         
         <button class="nav-arrow next" (click)="nextView()">
@@ -29,6 +30,10 @@
 
     @if (currentView() === 1) {
         <app-dashboard-chart></app-dashboard-chart>
+    }
+
+    @if (currentView() === 2) {
+        <app-subscription-chart></app-subscription-chart>
     }
 
     <div class="tables-container">

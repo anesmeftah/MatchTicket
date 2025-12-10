@@ -1,0 +1,207 @@
+/* Main container - uses grid to place charts side by side */
+.subscription-charts-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+/* Each chart card */
+.chart-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Chart titles */
+.chart-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* ===== PIE CHART STYLES ===== */
+
+.pie-chart-container {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.pie-chart {
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+/* Pie chart segments - each one gets a different color */
+.pie-segment {
+  transition: transform 0.2s ease;
+  transform-origin: center;
+}
+
+.pie-segment:hover {
+  transform: scale(1.02);
+}
+
+/* Colors for pie segments (up to 6 different colors) */
+.pie-segment[data-index="0"] { fill: #6366f1; }  /* Purple */
+.pie-segment[data-index="1"] { fill: #10b981; }  /* Green */
+.pie-segment[data-index="2"] { fill: #f59e0b; }  /* Orange */
+.pie-segment[data-index="3"] { fill: #ef4444; }  /* Red */
+.pie-segment[data-index="4"] { fill: #3b82f6; }  /* Blue */
+.pie-segment[data-index="5"] { fill: #8b5cf6; }  /* Violet */
+
+/* Center text in donut chart */
+.center-text {
+  font-size: 14px;
+  font-weight: 700;
+  fill: #1a1a1a;
+}
+
+/* Legend (key for the pie chart) */
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Colored squares in the legend */
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-color[data-index="0"] { background: #6366f1; }
+.legend-color[data-index="1"] { background: #10b981; }
+.legend-color[data-index="2"] { background: #f59e0b; }
+.legend-color[data-index="3"] { background: #ef4444; }
+.legend-color[data-index="4"] { background: #3b82f6; }
+.legend-color[data-index="5"] { background: #8b5cf6; }
+
+.legend-label {
+  font-size: 14px;
+  color: #333;
+  min-width: 80px;
+}
+
+.legend-value {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ===== STATS SUMMARY ===== */
+
+.stats-summary {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+/* ===== HORIZONTAL BAR CHART STYLES ===== */
+
+.horizontal-bar-container {
+  min-height: 200px;
+}
+
+.horizontal-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.horizontal-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.horizontal-bar-label {
+  font-size: 14px;
+  color: #333;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.horizontal-bar-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.horizontal-bar {
+  height: 24px;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  min-width: 8px;
+}
+
+/* Colors for horizontal bars */
+.horizontal-bar[data-index="0"] { background: linear-gradient(90deg, #6366f1, #818cf8); }
+.horizontal-bar[data-index="1"] { background: linear-gradient(90deg, #10b981, #34d399); }
+.horizontal-bar[data-index="2"] { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.horizontal-bar[data-index="3"] { background: linear-gradient(90deg, #ef4444, #f87171); }
+.horizontal-bar[data-index="4"] { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.horizontal-bar[data-index="5"] { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+.horizontal-bar-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  min-width: 30px;
+}
+
+/* ===== NO DATA MESSAGE ===== */
+
+.no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* ===== RESPONSIVE: Stack charts on small screens ===== */
+
+@media (max-width: 900px) {
+  .subscription-charts-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .pie-chart-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}

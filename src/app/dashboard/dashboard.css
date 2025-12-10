@@ -140,9 +140,23 @@ app-matchs-table {
 app-dashboard-chart {
   display: block;
   width: 100%;
+  margin-bottom: 24px;
 }
 
 /* Histogram Section */
+app-histogram {
+  display: block;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+/* Subscription Chart Section */
+app-subscription-chart {
+  display: block;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
 .histogram-section {
   background-color: #ffffff;
   border-radius: 12px;

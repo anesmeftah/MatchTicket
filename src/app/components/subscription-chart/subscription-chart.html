@@ -1,0 +1,89 @@
+<div class="subscription-charts-container">
+
+  <!-- PIE CHART: Subscriptions by Plan -->
+  <div class="chart-card">
+    <h3>Subscriptions by Plan</h3>
+    <div class="pie-chart-container">
+      
+      <!-- Show chart only if we have data -->
+      @if (subscriptionsByPlan().length > 0) {
+        
+        <!-- SVG Pie Chart -->
+        <svg class="pie-chart" viewBox="0 0 100 100">
+          <!-- Loop through each plan and draw a segment -->
+          @for (item of subscriptionsByPlan(); track item.label; let i = $index) {
+            <path
+              [attr.d]="getSegmentPath(subscriptionsByPlan(), i)"
+              class="pie-segment"
+              [attr.data-index]="i"
+            />
+          }
+          <!-- White circle in the middle (donut hole) -->
+          <circle cx="50" cy="50" r="20" fill="white" />
+          <!-- Total count in the center -->
+          <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" class="center-text">
+            {{ totalSubscriptions() }}
+          </text>
+        </svg>
+
+        <!-- Legend showing what each color means -->
+        <div class="legend">
+          @for (item of subscriptionsByPlan(); track item.label; let i = $index) {
+            <div class="legend-item">
+              <span class="legend-color" [attr.data-index]="i"></span>
+              <span class="legend-label">{{ item.label }}</span>
+              <span class="legend-value">{{ item.value }} ({{ getPercentage(subscriptionsByPlan(), item.value) }})</span>
+            </div>
+          }
+        </div>
+
+      } @else {
+        <div class="no-data">No subscription data available</div>
+      }
+
+    </div>
+
+    <!-- Summary stats -->
+    <div class="stats-summary">
+      <div class="stat-item">
+        <span class="stat-label">Total Revenue</span>
+        <span class="stat-value">${{ totalRevenue() | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL BAR CHART: Subscriptions by Team -->
+  <div class="chart-card">
+    <h3>Subscriptions by Team</h3>
+    <div class="horizontal-bar-container">
+      
+      @if (subscriptionsByTeam().length > 0) {
+        <div class="horizontal-bars">
+          <!-- Loop through each team and draw a bar -->
+          @for (item of subscriptionsByTeam(); track item.label; let i = $index) {
+            <div class="horizontal-bar-item">
+              <!-- Team name on the left -->
+              <span class="horizontal-bar-label">{{ item.label }}</span>
+              <!-- Bar container -->
+              <div class="horizontal-bar-wrapper">
+                <!-- The actual bar (width based on value) -->
+                <div 
+                  class="horizontal-bar" 
+                  [style.width.%]="getBarWidth(item.value, getMaxValue(subscriptionsByTeam()))"
+                  [attr.data-index]="i"
+                >
+                </div>
+                <!-- Count number at the end -->
+                <span class="horizontal-bar-value">{{ item.value }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-data">No team subscription data available</div>
+      }
+
+    </div>
+  </div>
+
+</div>
