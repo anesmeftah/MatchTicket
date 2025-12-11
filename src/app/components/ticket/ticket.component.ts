@@ -1,8 +1,10 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase';
 import { Sidebar3 } from '../sidebar3/sidebar3';
+import { TopbarComponent } from "../topbar/topbar";
+import { Search } from '../../services/search';
 
 interface Ticket {
   id: number;
@@ -30,18 +32,35 @@ interface UserTicket {
 @Component({
   selector: 'app-ticket',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar3],
+  imports: [CommonModule, FormsModule, Sidebar3, TopbarComponent],
   templateUrl: './ticket.component.html',
   styleUrls: ['./ticket.component.css']
 })
 export class TicketComponent implements OnInit {
   private supabaseService = inject(SupabaseService);
   private cdr = inject(ChangeDetectorRef);
+  private searchService = inject(Search);
 
   availableTickets: Ticket[] = [];
   userTickets: UserTicket[] = [];
   loading = false;
   currentUserId: number | null = null;
+
+  filteredTickets = computed(() => {
+    const term = this.searchService.searchTerm().toLowerCase();
+    const tickets = this.availableTickets;
+
+    if (!term) {
+      return tickets;
+    }
+
+    return tickets.filter(ticket =>
+      ticket.event?.toLowerCase().includes(term) ||
+      ticket.seat?.toLowerCase().includes(term) ||
+      ticket.section?.toLowerCase().includes(term) ||
+      ticket.status?.toLowerCase().includes(term)
+    );
+  });
 
   showModal = false;
   selectedTicket: Ticket | null = null;

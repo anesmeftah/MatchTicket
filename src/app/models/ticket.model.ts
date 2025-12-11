@@ -3,7 +3,10 @@ export interface Ticket {
   event: string;
   date: string;
   seat: string;
+  section?: string;
+  row_number?: number;
+  seat_number?: number;
   price: number;
-  status: 'available' | 'sold' | 'reserved';
+  status: string;
+  match_id?: number;
 }
-

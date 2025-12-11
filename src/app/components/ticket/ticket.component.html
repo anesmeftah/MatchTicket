@@ -1,3 +1,4 @@
+<app-topbar></app-topbar>
 <app-sidebar3></app-sidebar3>
 <div class="ticket-container">
   <h1>Tickets</h1>
@@ -14,8 +15,12 @@
       <p>No tickets available at the moment.</p>
     </div>
 
-    <div *ngIf="!loading && availableTickets.length > 0" class="tickets-grid">
-      <div *ngFor="let ticket of availableTickets" class="ticket-card">
+    <div *ngIf="!loading && availableTickets.length > 0 && filteredTickets().length === 0" class="empty">
+      <p>No tickets match your search.</p>
+    </div>
+
+    <div *ngIf="!loading && filteredTickets().length > 0" class="tickets-grid">
+      <div *ngFor="let ticket of filteredTickets()" class="ticket-card">
         <div class="ticket-header">
           <h3>{{ ticket.event }}</h3>
           <span class="status-badge">{{ ticket.status }}</span>

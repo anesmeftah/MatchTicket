@@ -3,7 +3,7 @@ import { AuthComponent } from './pages/auth/auth.component';
 
 export const routes: Routes = [
 
-  { path: '' , redirectTo: 'ticket-user', pathMatch: 'full'},
+  { path: '' , redirectTo: 'auth', pathMatch: 'full'},
 
   { 
     path: 'dashboard', 
