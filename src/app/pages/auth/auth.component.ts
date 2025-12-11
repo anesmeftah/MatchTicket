@@ -95,6 +95,11 @@ export class AuthComponent {
       return;
     }
 
+    if (!this.isValidGmailEmail(this.signUpEmail)) {
+      this.errorMessage = 'L\'email doit se terminer par @gmail.com ou @gmail.fr';
+      return;
+    }
+
     if (this.signUpPassword.length < 6) {
       this.errorMessage = 'Le mot de passe doit contenir au moins 6 caractères';
       return;
@@ -142,6 +147,10 @@ export class AuthComponent {
       return 'Trop de tentatives. Réessayez plus tard';
     }
     return 'Une erreur est survenue. Réessayez.';
+  }
+
+  private isValidGmailEmail(email: string): boolean {
+    return email.endsWith('@gmail.com') || email.endsWith('@gmail.fr');
   }
 
   private clearMessages() {
