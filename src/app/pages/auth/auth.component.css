@@ -3,7 +3,6 @@
 }
 
 body {
-
 	background: #f6f5f7;
 	display: flex;
 	justify-content: center;
@@ -12,6 +11,16 @@ body {
 	font-family: 'Montserrat', sans-serif;
 	height: 100vh;
 	margin: 0;
+}
+
+.auth-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	background: #f6f5f7;
+	width: 100%;
+	padding: 20px;
 }
 
 h1 {
