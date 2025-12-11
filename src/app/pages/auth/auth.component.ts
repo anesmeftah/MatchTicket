@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -28,7 +28,8 @@ export class AuthComponent {
 
   constructor(
     private supabaseService: SupabaseService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   onSignUp() {
@@ -53,21 +54,38 @@ export class AuthComponent {
 
     this.loading = true;
     this.clearMessages();
+    this.cdr.detectChanges();
 
-    const { data, error } = await this.supabaseService.signInWithPassword(
-      this.signInEmail,
-      this.signInPassword
-    );
+    try {
+      const result = await this.supabaseService.signInWithUsersTable(
+        this.signInEmail,
+        this.signInPassword
+      );
 
-    this.loading = false;
+      this.loading = false;
+      this.cdr.detectChanges();
 
-    if (error) {
-      this.errorMessage = this.getErrorMessage(error.message);
-    } else {
-      this.successMessage = 'Connexion réussie !';
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1000);
+      if (result.success) {
+        this.successMessage = 'Connexion réussie !';
+        console.log('✅ User signed in:', result.data);
+        
+        // Check if user is admin
+        const isAdmin = result.data?.isadmin === 1 || result.data?.isadmin === true;
+        const redirectPath = isAdmin ? '/dashboard' : '/ticket';
+        
+        setTimeout(() => {
+          this.router.navigate([redirectPath]);
+        }, 1000);
+      } else {
+        this.errorMessage = result.error || 'An error occurred';
+        console.log('❌ Sign in failed:', result.error);
+        this.cdr.detectChanges();
+      }
+    } catch (error) {
+      console.error('❌ Exception during sign in:', error);
+      this.errorMessage = 'An unexpected error occurred';
+      this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 

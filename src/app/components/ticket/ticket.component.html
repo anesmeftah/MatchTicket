@@ -1,0 +1,141 @@
+<app-sidebar3></app-sidebar3>
+<div class="ticket-container">
+  <h1>Tickets</h1>
+  
+  <!-- Available Tickets Section -->
+  <div class="tickets-section">
+    <h2>Available Tickets</h2>
+
+    <div *ngIf="loading" class="loading">
+      <p>Loading tickets...</p>
+    </div>
+
+    <div *ngIf="!loading && availableTickets.length === 0" class="empty">
+      <p>No tickets available at the moment.</p>
+    </div>
+
+    <div *ngIf="!loading && availableTickets.length > 0" class="tickets-grid">
+      <div *ngFor="let ticket of availableTickets" class="ticket-card">
+        <div class="ticket-header">
+          <h3>{{ ticket.event }}</h3>
+          <span class="status-badge">{{ ticket.status }}</span>
+        </div>
+
+        <div class="ticket-details">
+          <div class="detail-row">
+            <span class="label">Date:</span>
+            <span class="value">{{ formatDate(ticket.date) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Seat:</span>
+            <span class="value">{{ ticket.seat }}</span>
+          </div>
+          <div class="detail-row" *ngIf="ticket.section">
+            <span class="label">Section:</span>
+            <span class="value">{{ ticket.section }}</span>
+          </div>
+          <div class="detail-row" *ngIf="ticket.row_number">
+            <span class="label">Row:</span>
+            <span class="value">{{ ticket.row_number }}</span>
+          </div>
+          <div class="detail-row" *ngIf="ticket.seat_number">
+            <span class="label">Seat #:</span>
+            <span class="value">{{ ticket.seat_number }}</span>
+          </div>
+        </div>
+
+        <div class="ticket-footer">
+          <div class="price">
+            <span class="label">Price:</span>
+            <span class="amount">${{ formatPrice(ticket.price) }}</span>
+          </div>
+          <button 
+            (click)="openBuyModal(ticket)" 
+            class="buy-btn"
+            [disabled]="buyingId === ticket.id"
+          >
+            {{ buyingId === ticket.id ? 'Buying...' : 'Buy Now' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User's Tickets Section -->
+  <div class="tickets-section my-tickets-section">
+    <h2>My Tickets</h2>
+
+    <div *ngIf="userTickets.length === 0" class="empty">
+      <p>You haven't purchased any tickets yet.</p>
+    </div>
+
+    <div *ngIf="userTickets.length > 0" class="tickets-grid">
+      <div *ngFor="let ticket of userTickets" class="ticket-card purchased">
+        <div class="ticket-header">
+          <h3>{{ ticket.event }}</h3>
+          <span class="status-badge purchased">Purchased</span>
+        </div>
+
+        <div class="ticket-details">
+          <div class="detail-row">
+            <span class="label">Date:</span>
+            <span class="value">{{ formatDate(ticket.date) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Seat:</span>
+            <span class="value">{{ ticket.seat }}</span>
+          </div>
+          <div class="detail-row" *ngIf="ticket.section">
+            <span class="label">Section:</span>
+            <span class="value">{{ ticket.section }}</span>
+          </div>
+        </div>
+
+        <div class="ticket-footer">
+          <div class="price">
+            <span class="label">Price:</span>
+            <span class="amount">${{ formatPrice(ticket.price) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Buy Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Confirm Purchase</h2>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+
+    <div *ngIf="selectedTicket" class="modal-body">
+      <div class="ticket-summary">
+        <p class="event-name"><strong>{{ selectedTicket.event }}</strong></p>
+        <p class="date">{{ formatDate(selectedTicket.date) }}</p>
+        <p class="seat-info">
+          Seat {{ selectedTicket.seat }}
+          <span *ngIf="selectedTicket.section"> • Section {{ selectedTicket.section }}</span>
+          <span *ngIf="selectedTicket.row_number"> • Row {{ selectedTicket.row_number }}</span>
+        </p>
+      </div>
+
+      <div class="price-summary">
+        <span class="label">Total Price:</span>
+        <span class="amount">${{ formatPrice(selectedTicket.price) }}</span>
+      </div>
+
+      <p class="confirmation-text">Are you sure you want to purchase this ticket?</p>
+    </div>
+
+    <div class="modal-actions">
+      <button (click)="confirmBuy()" class="confirm-btn" [disabled]="buyingId !== null">
+        {{ buyingId ? 'Processing...' : 'Confirm Purchase' }}
+      </button>
+      <button (click)="closeModal()" class="cancel-btn" [disabled]="buyingId !== null">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

@@ -661,4 +661,209 @@ async resetPassword(email: string) {
     return { data: null, error: error };
   }
 }
+
+async getAvailableTickets() {
+  try {
+    const { data, error } = await this.supabase
+      .from('tickets')
+      .select('id, event, date, seat, section, row_number, seat_number, price, status, match_id')
+      .eq('status', 'available')
+      .order('date', { ascending: true });
+
+    if (error) {
+      console.error('❌ Error fetching available tickets:', error);
+      return [];
+    }
+
+    console.log('✅ Available tickets loaded:', data?.length || 0);
+    
+    // Ensure price is properly converted to number
+    return (data || []).map((ticket: any) => ({
+      ...ticket,
+      price: typeof ticket.price === 'string' ? parseFloat(ticket.price) : ticket.price
+    }));
+  } catch (error) {
+    console.error('Exception in getAvailableTickets:', error);
+    return [];
+  }
+}
+
+async getUserTickets(userId: number) {
+  try {
+    const { data, error } = await this.supabase
+      .from('ticketUser')
+      .select('id, id_user, event, date, seat, section, price')
+      .eq('id_user', userId)
+      .order('date', { ascending: true });
+
+    if (error) {
+      console.error('❌ Error fetching user tickets:', error);
+      return [];
+    }
+
+    console.log('✅ User tickets loaded:', data?.length || 0);
+    
+    // Ensure price is properly converted to number
+    return (data || []).map((ticket: any) => ({
+      ...ticket,
+      price: typeof ticket.price === 'string' ? parseFloat(ticket.price) : ticket.price
+    }));
+  } catch (error) {
+    console.error('Exception in getUserTickets:', error);
+    return [];
+  }
+}
+
+async buyTicket(userId: number, ticketId: number) {
+  try {
+    console.log('🛒 Starting ticket purchase:', { userId, ticketId });
+
+    // Get ticket details
+    console.log('📋 Fetching ticket details...');
+    const { data: ticket, error: ticketError } = await this.supabase
+      .from('tickets')
+      .select('id, event, date, seat, section, price, status')
+      .eq('id', ticketId)
+      .single();
+
+    if (ticketError || !ticket) {
+      console.error('❌ Error fetching ticket:', ticketError);
+      return { success: false, error: 'Ticket not found: ' + ticketError?.message };
+    }
+
+    // Check if ticket is still available
+    if (ticket.status !== 'available') {
+      console.error('❌ Ticket is no longer available:', ticket.status);
+      return { success: false, error: 'Ticket is no longer available' };
+    }
+
+    console.log('✅ Ticket found:', ticket);
+
+    // Add to ticketUser table
+    console.log('📝 Adding ticket to ticketUser table...');
+    const { data: userTicket, error: insertError } = await this.supabase
+      .from('ticketUser')
+      .insert({
+        id_user: userId,
+        event: ticket.event,
+        date: ticket.date,
+        seat: ticket.seat,
+        section: ticket.section || null,
+        price: typeof ticket.price === 'string' ? parseFloat(ticket.price) : ticket.price
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error('❌ Error adding ticket to user:', insertError);
+      return { success: false, error: 'Insert failed: ' + insertError.message };
+    }
+
+    console.log('✅ Ticket added to user:', userTicket);
+
+    // Update ticket status to sold
+    console.log('🔄 Updating ticket status to sold...');
+    const { error: updateError } = await this.supabase
+      .from('tickets')
+      .update({ status: 'sold', updated_at: new Date().toISOString() })
+      .eq('id', ticketId);
+
+    if (updateError) {
+      console.error('❌ Error updating ticket status:', updateError);
+      // Try to rollback the insert
+      console.log('↩️ Rolling back insert...');
+      await this.supabase.from('ticketUser').delete().eq('id', userTicket.id);
+      return { success: false, error: 'Update failed: ' + updateError.message };
+    }
+
+    console.log('✅ Ticket status updated to sold');
+    return { success: true, data: userTicket };
+  } catch (error) {
+    console.error('❌ Exception in buyTicket:', error);
+    return { success: false, error: 'Exception: ' + (error as any).message };
+  }
+}
+
+/**
+ * Sign in user with email and password from users table
+ * Sets isconnected = 1 for this user and isconnected = 0 for all others
+ */
+async signInWithUsersTable(email: string, password: string) {
+  try {
+    console.log('🔐 Attempting sign in with:', email);
+
+    // 1. Verify credentials in users table
+    const { data: user, error: userError } = await this.supabase
+      .from('users')
+      .select('id, email, nom, prenom, password, isadmin')
+      .eq('email', email)
+      .single();
+
+    if (userError || !user) {
+      console.error('❌ User not found:', userError);
+      return { success: false, error: 'Your credentials are wrong' };
+    }
+
+    // 2. Check password (basic validation)
+    if (user.password !== password) {
+      console.error('❌ Password mismatch');
+      return { success: false, error: 'Your credentials are wrong' };
+    }
+
+    console.log('✅ Credentials verified');
+
+    // 3. Set all users to isconnected = 0
+    const { error: resetError } = await this.supabase
+      .from('users')
+      .update({ isconnected: 0 })
+      .neq('id', user.id);
+
+    if (resetError) {
+      console.error('❌ Error resetting connections:', resetError);
+      // Continue anyway as this is not critical
+    }
+
+    // 4. Set this user to isconnected = 1
+    const { error: updateError } = await this.supabase
+      .from('users')
+      .update({ isconnected: 1 })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('❌ Error setting isconnected:', updateError);
+      return { success: false, error: 'Failed to establish connection' };
+    }
+
+    console.log('✅ User connected successfully:', user.id);
+    return { success: true, data: user };
+  } catch (error) {
+    console.error('❌ Exception in signInWithUsersTable:', error);
+    return { success: false, error: 'An error occurred during sign in' };
+  }
+}
+
+/**
+ * Sign out user - set isconnected = 0
+ */
+async signOutUser(userId: number) {
+  try {
+    console.log('🚪 Signing out user:', userId);
+
+    const { error } = await this.supabase
+      .from('users')
+      .update({ isconnected: 0 })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('❌ Error signing out:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('✅ User signed out');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Exception in signOutUser:', error);
+    return { success: false, error: 'An error occurred during sign out' };
+  }
+}
 }

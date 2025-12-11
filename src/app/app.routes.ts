@@ -39,4 +39,10 @@ export const routes: Routes = [
       import('./pages/auth/auth.component').then(c => c.AuthComponent)
   },
 
+  {
+    path: 'ticket', 
+    loadComponent: () => import('./components/ticket/ticket.component')
+      .then(c => c.TicketComponent) 
+  }
+
 ];
