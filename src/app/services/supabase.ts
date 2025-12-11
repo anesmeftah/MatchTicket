@@ -343,6 +343,31 @@ async updateUser1(userData: UserData): Promise<boolean> {
     const { data: { user } } = await this.supabase.auth.getUser();
     return user;
   }
+  async getConnectedUserId(): Promise<number> {
+    try {
+      const { data: users, error: queryError } = await this.supabase
+        .from('users')
+        .select('id')
+        .eq('isconnected', 1)
+        .maybeSingle(); // Returns null if no match instead of throwing
+
+      if (queryError) {
+        console.error('Query error:', queryError);
+        return 0;
+      }
+
+      if (!users) {
+        console.log('No connected user found in users table');
+        return 0;
+      }
+
+      return users.id;
+
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      return 0;
+    }
+  }
 
   async addTickets(tickets: any[]) {
     const { data, error } = await this.supabase

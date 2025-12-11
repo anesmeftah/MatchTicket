@@ -15,7 +15,7 @@ import { Sidebar2 } from '../sidebar2/sidebar2';
 })
 export class Profile implements OnInit {
   private supabaseService = inject(SupabaseService);
-  
+  connectedUserId: number = 0;
   user: User | any = {
     id: 1,
     email: 'maindf@gmail.com',
@@ -43,7 +43,8 @@ export class Profile implements OnInit {
   }
   private async loadUserDataInBackground() {
     try {
-      const userData = await this.supabaseService.getUser1(1);
+      this.connectedUserId = await this.supabaseService.getConnectedUserId();
+      const userData = await this.supabaseService.getUser1(this.connectedUserId);
       if (userData) {
         this.user = userData;
         this.originalUser = { ...userData };

@@ -70,7 +70,7 @@ export class SubscriptionComponent implements OnInit {
 
   activeSubscription: Subscription[] = [];
   userId: number = 1; // Default user ID
-
+  connectedUserId: number = 0;
   formData = {
     nom: '',
     prenom: '',
@@ -87,8 +87,9 @@ export class SubscriptionComponent implements OnInit {
 
   async loadUserSubscription() {
     try {
-      console.log('Loading subscriptions for user ID:', this.userId);
-      const subscriptions = await this.supabaseService.getAbonnementByUserId(this.userId);
+      this.connectedUserId = await this.supabaseService.getConnectedUserId();
+      console.log('Loading subscriptions for user ID:', this.connectedUserId);
+      const subscriptions = await this.supabaseService.getAbonnementByUserId(this.connectedUserId);
       console.log('Subscriptions data retrieved:', subscriptions);
       if (subscriptions && subscriptions.length > 0) {
         this.activeSubscription = subscriptions.map(sub => ({

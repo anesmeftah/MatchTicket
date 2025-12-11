@@ -1,5 +1,7 @@
 .profile-container {
-  padding: 30px;
+  padding-top: 60px;
+  padding-right: 30px;
+  padding-left: 30px;
   max-width: 1400px;
   margin: 0 auto;
   background-color: #1e3a8a;
