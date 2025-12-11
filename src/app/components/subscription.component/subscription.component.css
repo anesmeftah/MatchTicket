@@ -123,8 +123,23 @@ h2 {
   outline: none;
   border-color: #667eea;
 }
+.form-control1 {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.form-control1:focus {
+  outline: none;
+  border-color: #667eea;
+}
 
 select.form-control {
+  cursor: pointer;
+}
+select.form-control1 {
   cursor: pointer;
 }
 
