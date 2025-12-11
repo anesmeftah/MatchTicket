@@ -1,0 +1,51 @@
+<div class="sell-page">
+  <h2>Your Tickets</h2>
+
+  <div *ngIf="loading" class="loading">Loading...</div>
+
+  <div *ngIf="!loading && tickets.length === 0" class="empty">You have no tickets to sell.</div>
+
+  <table *ngIf="!loading && tickets.length" class="tickets-table">
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Date</th>
+        <th>Seat</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of tickets">
+        <td>{{ t.event }}</td>
+        <td>{{ t.date | date:'medium' }}</td>
+        <td>{{ t.seat }}</td>
+        <td>{{ t.price | currency }}</td>
+        <td>{{ t.status }}</td>
+        <td>
+          <button *ngIf="t.status !== 'sold'" (click)="openSellModal(t)" class="sell-btn">Sell</button>
+          <span *ngIf="t.status === 'sold'" class="sold-label">SOLD</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Sell Ticket</h3>
+    <p *ngIf="selectedTicket"><strong>{{ selectedTicket.event }}</strong> — {{ selectedTicket.seat }} • {{ selectedTicket.price | currency }}</p>
+
+    <div class="form-row">
+      <label>Buyer email</label>
+      <input type="email" [(ngModel)]="buyerEmail" name="buyerEmail" placeholder="buyer@example.com">
+    </div>
+
+    <div class="modal-actions">
+      <button (click)="confirmSell()" class="confirm-btn">Confirm Sell</button>
+      <button (click)="closeModal()" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>

@@ -526,12 +526,10 @@ async updatePassword(userId: number, newPassword: string) {
  */
 async signUpWithPassword(email: string, password: string, nom?: string, prenom?: string) {
   try {
-    // Créer le nom complet
     const fullName = `${nom || ''} ${prenom || ''}`.trim();
     
-    console.log('Inscription avec:', { email, nom, prenom, fullName }); // Pour debug
+    console.log('🔍 Inscription avec:', { email, nom, prenom, fullName });
     
-    // 1. Créer le compte dans Supabase Auth
     const { data: authData, error: authError } = await this.supabase.auth.signUp({
       email,
       password,
@@ -546,30 +544,41 @@ async signUpWithPassword(email: string, password: string, nom?: string, prenom?:
     });
 
     if (authError) {
-      console.error('Erreur auth:', authError);
+      console.error('❌ Erreur auth:', authError.message);
+      
+      // Check for rate limiting
+      if (authError.message.includes('27 seconds')) {
+        throw new Error('⏳ Trop de tentatives. Veuillez attendre 27 secondes avant de réessayer.');
+      }
+      
       throw authError;
     }
 
-    console.log('Utilisateur créé:', authData);
+    console.log('✅ Utilisateur créé dans Auth:', authData.user?.id);
 
-    // 2. Insérer dans la table user
     if (authData.user) {
-      const { error: insertError } = await this.supabase
-        .from('user')
+      console.log('📝 Tentative insertion dans users table...');
+      
+      const { data: insertData, error: insertError } = await this.supabase
+        .from('users')
         .insert({
           email: email,
           nom: nom || '',
-          prenom: prenom || ''
-        });
+          prenom: prenom || '',
+        })
+        .select();
 
       if (insertError) {
-        console.error('Erreur insertion table user:', insertError);
+        console.error('❌ Erreur insertion table users:', insertError);
+        return { data: authData, error: insertError };
       }
+      
+      console.log('✅ Utilisateur inséré dans users table:', insertData);
     }
 
     return { data: authData, error: null };
   } catch (error: any) {
-    console.error('Exception signUpWithPassword:', error);
+    console.error('❌ Exception signUpWithPassword:', error);
     return { data: null, error: error };
   }
 }
