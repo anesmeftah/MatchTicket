@@ -4,45 +4,44 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase';
 import { User } from '../../models/user.model';
+import { Sidebar2 } from '../sidebar2/sidebar2';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule , Sidebar2],
   templateUrl: './profile.html',
   styleUrls: ['./profile.css']
 })
 export class Profile implements OnInit {
   private supabaseService = inject(SupabaseService);
-  
+  connectedUserId: number = 0;
   user: User | any = {
     id: 1,
-    email: 'maindf@gmail.com',
-    nom: 'Dupont',
-    prenom: 'Jean',
-    password: '123456'
+    email: '',
+    nom: '',
+    prenom: '',
+    password: ''
   };
   originalUser: User | any = {
     id: 1,
-    email: 'maindf@gmail.com',
-    nom: 'Dupont',
-    prenom: 'Jean',
-    password: '123456'
+    email: '',
+    nom: '',
+    prenom: '',
+    password: ''
   };
   message: string = '';
   errorMessage: string = '';
   isLoading: boolean = false;
 
   ngOnInit() {
-
-    this.originalUser = { ...this.user };
-    console.log('Profile loaded with default data:', this.user);
     
     this.loadUserDataInBackground();
   }
   private async loadUserDataInBackground() {
     try {
-      const userData = await this.supabaseService.getUser1(1);
+      this.connectedUserId = await this.supabaseService.getConnectedUserId();
+      const userData = await this.supabaseService.getUser1(this.connectedUserId);
       if (userData) {
         this.user = userData;
         this.originalUser = { ...userData };
