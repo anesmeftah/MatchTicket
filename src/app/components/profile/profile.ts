@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase';
 import { User } from '../../models/user.model';
-import { Sidebar2 } from '../sidebar2/sidebar2';
+import { Sidebar3 } from '../sidebar3/sidebar3';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule , Sidebar2],
+  imports: [CommonModule, FormsModule , Sidebar3],
   templateUrl: './profile.html',
   styleUrls: ['./profile.css']
 })

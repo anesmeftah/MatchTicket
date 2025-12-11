@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef, ValueEqualityFn } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase';
-import { Sidebar1 } from '../sidebar1/sidebar1';
+import { Sidebar3 } from '../sidebar3/sidebar3';
 
 interface Plan {
   id: number;
@@ -32,7 +32,7 @@ interface Subscription {
 @Component({
   selector: 'app-subscription',
   standalone: true,
-  imports: [CommonModule, FormsModule , Sidebar1],
+  imports: [CommonModule, FormsModule , Sidebar3],
   templateUrl: './subscription.component.html',
   styleUrls: ['./subscription.component.css']
 })

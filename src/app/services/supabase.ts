@@ -590,6 +590,7 @@ async signUpWithPassword(email: string, password: string, nom?: string, prenom?:
           email: email,
           nom: nom || '',
           prenom: prenom || '',
+          password: password
         })
         .select();
 
