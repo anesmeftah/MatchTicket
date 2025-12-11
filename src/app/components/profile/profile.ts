@@ -18,26 +18,23 @@ export class Profile implements OnInit {
   connectedUserId: number = 0;
   user: User | any = {
     id: 1,
-    email: 'maindf@gmail.com',
-    nom: 'Dupont',
-    prenom: 'Jean',
-    password: '123456'
+    email: '',
+    nom: '',
+    prenom: '',
+    password: ''
   };
   originalUser: User | any = {
     id: 1,
-    email: 'maindf@gmail.com',
-    nom: 'Dupont',
-    prenom: 'Jean',
-    password: '123456'
+    email: '',
+    nom: '',
+    prenom: '',
+    password: ''
   };
   message: string = '';
   errorMessage: string = '';
   isLoading: boolean = false;
 
   ngOnInit() {
-
-    this.originalUser = { ...this.user };
-    console.log('Profile loaded with default data:', this.user);
     
     this.loadUserDataInBackground();
   }
