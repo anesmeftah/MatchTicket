@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase';
 import { Search } from '../../services/search';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './topbar.html',
   styleUrls: ['./topbar.css']
 })
@@ -16,15 +17,28 @@ export class TopbarComponent implements OnInit {
   showNotifications = false;
   showUserMenu = false;
   notificationCount = 0;
+  searchForm: FormGroup;
 
   constructor(
     private supabase: SupabaseService,
-    private searchService: Search
-  ) {}
+    private searchService: Search,
+    private fb: FormBuilder
+  ) {
+    this.searchForm = this.fb.group({
+      searchTerm: ['']
+    });
+  }
 
   ngOnInit() {
     this.loadUserProfile();
     this.updateTime();
+    this.setupSearchSubscription();
+  }
+
+  setupSearchSubscription() {
+    this.searchForm.get('searchTerm')?.valueChanges.subscribe(value => {
+      this.searchService.setSearchTerm(value);
+    });
   }
 
   async loadUserProfile() {
@@ -46,9 +60,9 @@ export class TopbarComponent implements OnInit {
     window.location.reload();
   }
 
-  onSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.searchService.setSearchTerm(input.value);
+  onSearchSubmit() {
+    const searchTerm = this.searchForm.get('searchTerm')?.value;
+    this.searchService.setSearchTerm(searchTerm);
   }
   
 }
