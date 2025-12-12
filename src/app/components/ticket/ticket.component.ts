@@ -70,25 +70,25 @@ export class TicketComponent implements OnInit {
   constructor() {}
 
   async ngOnInit() {
-    console.log('🎫 TicketComponent initialized');
+
     await this.loadTickets();
   }
 
   async loadTickets() {
     this.loading = true;
-    console.log('📦 Loading tickets...');
+
     try {
       this.connectedUserId = await this.supabaseService.getConnectedUserId();
       // Load available tickets
       this.availableTickets = await this.supabaseService.getAvailableTickets();
-      console.log('✅ Available tickets loaded:', this.availableTickets.length);
+
 
       // Load user's purchased tickets (guest user ID = 1)
       const userId = this.connectedUserId ;
       this.userTickets = await this.supabaseService.getUserTickets(userId);
-      console.log('✅ User tickets loaded:', this.userTickets.length);
+
     } catch (error) {
-      console.error('❌ Error loading tickets:', error);
+
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
@@ -124,16 +124,16 @@ export class TicketComponent implements OnInit {
       const result = await this.supabaseService.buyTicket(this.connectedUserId, this.selectedTicket.id);
       
       if (result.success) {
-        console.log('✅ Purchase successful');
+
         alert('Ticket purchased successfully!');
         this.closeModal();
         await this.loadTickets();
       } else {
-        console.log('❌ Purchase failed:', result.error);
+
         alert('Error: ' + result.error);
       }
     } catch (error) {
-      console.error('❌ Error buying ticket:', error);
+
       alert('An error occurred while purchasing the ticket');
     } finally {
       this.buyingId = null;
