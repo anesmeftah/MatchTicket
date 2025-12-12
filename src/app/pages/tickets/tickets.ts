@@ -1,5 +1,5 @@
 
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Sidebar } from '../../components/sidebar/sidebar';
@@ -15,7 +15,7 @@ import { Match } from '../../models/match.model';
   templateUrl: './tickets.html',
   styleUrl: './tickets.css',
 })
-export class Tickets {
+export class Tickets implements OnInit {
   private matchService = inject(MatchService);
   private ticketService = inject(TicketService);
   private searchService = inject(Search);
@@ -58,6 +58,11 @@ export class Tickets {
 
   constructor() {
     this.initForm();
+  }
+
+  async ngOnInit() {
+    // Ensure matches are loaded when component initializes
+    await this.matchService.loadMatches();
   }
 
   initForm() {

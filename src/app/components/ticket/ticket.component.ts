@@ -91,6 +91,7 @@ export class TicketComponent implements OnInit {
       console.error('❌ Error loading tickets:', error);
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 

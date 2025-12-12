@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase';
@@ -15,6 +15,7 @@ import { Sidebar3 } from '../sidebar3/sidebar3';
 })
 export class Profile implements OnInit {
   private supabaseService = inject(SupabaseService);
+  private cdr = inject(ChangeDetectorRef);
   connectedUserId: number = 0;
   user: User | any = {
     id: 1,
@@ -34,21 +35,25 @@ export class Profile implements OnInit {
   errorMessage: string = '';
   isLoading: boolean = false;
 
-  ngOnInit() {
-    
-    this.loadUserDataInBackground();
+  async ngOnInit() {
+    await this.loadUserData();
   }
-  private async loadUserDataInBackground() {
+
+  private async loadUserData() {
     try {
+      this.isLoading = true;
       this.connectedUserId = await this.supabaseService.getConnectedUserId();
       const userData = await this.supabaseService.getUser1(this.connectedUserId);
       if (userData) {
         this.user = userData;
         this.originalUser = { ...userData };
-        console.log(' User loaded from Supabase:', this.user);
+        console.log('User loaded from Supabase:', this.user);
       }
     } catch (error) {
-      console.error('Background load error:', error);
+      console.error('Error loading user data:', error);
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
