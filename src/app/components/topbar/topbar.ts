@@ -31,7 +31,7 @@ export class TopbarComponent implements OnInit {
 
   ngOnInit() {
     this.loadUserProfile();
-    this.updateTime();
+
     this.setupSearchSubscription();
   }
 
@@ -49,11 +49,6 @@ export class TopbarComponent implements OnInit {
     }
   }
 
-  updateTime() {
-    setInterval(() => {
-      this.currentDate = new Date();
-    }, 60000);
-  }
 
 
   refreshData() {
