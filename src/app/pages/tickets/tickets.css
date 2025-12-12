@@ -438,3 +438,23 @@ select {
 .confirm-btn:active {
   transform: translateY(0);
 }
+
+.confirm-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.confirm-btn:disabled:hover {
+  background-color: #ccc;
+  transform: none;
+  box-shadow: none;
+}
+
+.error-message {
+  display: block;
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 6px;
+  font-weight: 500;
+}

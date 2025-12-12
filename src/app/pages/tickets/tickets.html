@@ -61,26 +61,32 @@
           <p class="date">{{ selectedMatch()?.date | date:'mediumDate' }}</p>
         </div>
 
-        <div class="booking-form">
+        <form [formGroup]="ticketForm" (ngSubmit)="generateTickets()" class="booking-form">
           <div class="form-group">
             <label>Quantity</label>
             <div class="quantity-control">
-              <button (click)="ticketQuantity.set(ticketQuantity() > 1 ? ticketQuantity() - 1 : 1)">-</button>
-              <input type="number" [ngModel]="ticketQuantity()" (ngModelChange)="ticketQuantity.set($event)" min="1" max="100">
-              <button (click)="ticketQuantity.set(ticketQuantity() < 100 ? ticketQuantity() + 1 : 100)">+</button>
+              <button type="button" (click)="decrementQuantity()">-</button>
+              <input type="number" formControlName="quantity" min="1">
+              <button type="button" (click)="incrementQuantity()">+</button>
             </div>
+            @if (ticketForm.get('quantity')?.invalid && ticketForm.get('quantity')?.touched) {
+              <span class="error-message">Quantity must be at least 1</span>
+            }
           </div>
 
           <div class="form-group">
             <label>Price per Ticket ($)</label>
             <div class="quantity-control" style="width: 100%">
-              <input type="number" [ngModel]="ticketPrice()" (ngModelChange)="ticketPrice.set($event)" min="0" style="width: 100%">
+              <input type="number" formControlName="price" min="0" style="width: 100%">
             </div>
+            @if (ticketForm.get('price')?.invalid && ticketForm.get('price')?.touched) {
+              <span class="error-message">Price must be a positive number</span>
+            }
           </div>
 
           <div class="form-group">
             <label>Section / Row</label>
-            <select [ngModel]="selectedSeat()" (ngModelChange)="updatePrice($event)">
+            <select formControlName="section">
               <option value="A1">Section A - Row 1</option>
               <option value="A2">Section A - Row 2</option>
               <option value="B1">Section B - Row 1</option>
@@ -94,8 +100,8 @@
             <span class="amount">${{ totalValue() }}</span>
           </div>
 
-          <button class="confirm-btn" (click)="generateTickets()">Generate Tickets</button>
-        </div>
+          <button type="submit" class="confirm-btn" [disabled]="ticketForm.invalid">Generate Tickets</button>
+        </form>
       </div>
     </div>
   }
