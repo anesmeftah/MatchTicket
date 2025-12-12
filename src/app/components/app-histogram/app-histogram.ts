@@ -18,3 +18,4 @@ export class AppHistogram {
     return (count / max) * 100;
   }
 }
+
